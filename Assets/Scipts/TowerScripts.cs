@@ -10,6 +10,9 @@ public abstract class Tower : MonoBehaviour
 
     protected float fireCooldown = 0f;
 
+    [Header("Shooting")]
+    [SerializeField] private GameObject projectilePrefab;
+    [SerializeField] private Transform firePoint;
     protected Transform target;
 
     protected virtual void Update()
@@ -23,19 +26,18 @@ public abstract class Tower : MonoBehaviour
         }
     }
 
-    protected abstract void Shoot();
-    // void Shoot()
-    // {
-    //     GameObject projectile = Instantiate(
-    //         projectilePrefab,
-    //         firePoint.position,
-    //         firePoint.rotation
-    //     );
+    void Shoot()
+    {
+        GameObject projectile = Instantiate(
+            projectilePrefab,
+            firePoint.position,
+            firePoint.rotation
+        );
 
-    //     Projectile p = projectile.GetComponent<Projectile>();
-    //     p.damage = damage;
-    //     p.SetTarget(target);
-    // }
+        Projectile p = projectile.GetComponent<Projectile>();
+        p.SetDamage(damage);
+        p.SetTarget(target);
+    }
 
     protected void FindTarget()
     {
