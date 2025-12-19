@@ -26,18 +26,21 @@ public abstract class Tower : MonoBehaviour
         }
     }
 
-    void Shoot()
+    protected virtual void Shoot()
     {
-        GameObject projectile = Instantiate(
-            projectilePrefab,
-            firePoint.position,
-            firePoint.rotation
-        );
+        if (projectilePrefab == null || firePoint == null) 
+            return;
 
-        Projectile p = projectile.GetComponent<Projectile>();
-        p.SetDamage(damage);
-        p.SetTarget(target);
+    GameObject projectile = Instantiate(projectilePrefab, firePoint.position, firePoint.rotation);
+    Projectile p = projectile.GetComponent<Projectile>();
+
+    if (p == null) 
+        return;
+
+    p.SetDamage(damage);
+    p.SetTarget(target);
     }
+
 
     protected void FindTarget()
     {
