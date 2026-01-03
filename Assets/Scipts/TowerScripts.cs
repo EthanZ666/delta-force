@@ -14,22 +14,35 @@ public abstract class Tower : MonoBehaviour
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private Transform firePoint;
     protected Transform target;
+    
 
-    protected virtual void Update()
+   protected virtual void Update()
+{
+    fireCooldown -= Time.deltaTime;
+
+    FindTarget();
+
+    if (target != null && fireCooldown <= 0f)
     {
-        fireCooldown -= Time.deltaTime;
-
-        if (target != null && fireCooldown <= 0f)
-        {
-            Shoot();
-            fireCooldown = 1f / fireRate;
-        }
+        Shoot();
+        fireCooldown = 1f / fireRate;
     }
+}
+
 
     protected virtual void Shoot()
     {
+<<<<<<< Updated upstream
         if (projectilePrefab == null || firePoint == null) 
             return;
+=======
+        Debug.Log("SHOOT CALLED");
+        GameObject projectile = Instantiate(
+            projectilePrefab,
+            firePoint.position,
+            firePoint.rotation
+        );
+>>>>>>> Stashed changes
 
     GameObject projectile = Instantiate(projectilePrefab, firePoint.position, firePoint.rotation);
     Projectile p = projectile.GetComponent<Projectile>();
@@ -43,23 +56,26 @@ public abstract class Tower : MonoBehaviour
 
 
     protected void FindTarget()
+{
+    GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+    float shortestDistance = Mathf.Infinity;
+    GameObject nearestEnemy = null;
+
+    foreach (GameObject enemyObj in enemies)
     {
-        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
-        float shortestDistance = Mathf.Infinity;
-        GameObject nearestEnemy = null;
+        EnemyBase enemy = enemyObj.GetComponent<EnemyBase>();
+        if (enemy == null || enemy.IsDead) continue;
 
-        foreach (GameObject enemy in enemies)
+        float distance = Vector3.Distance(transform.position, enemyObj.transform.position);
+        if (distance < shortestDistance && distance <= range)
         {
-            float distance = Vector3.Distance(transform.position, enemy.transform.position);
-            if (distance < shortestDistance && distance <= range)
-            {
-                shortestDistance = distance;
-                nearestEnemy = enemy;
-            }
+            shortestDistance = distance;
+            nearestEnemy = enemyObj;
         }
-
-        target = nearestEnemy != null ? nearestEnemy.transform : null;
     }
+
+    target = nearestEnemy != null ? nearestEnemy.transform : null;
+}
 }
 
 

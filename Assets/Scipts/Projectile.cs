@@ -3,9 +3,11 @@ using UnityEngine;
 public class Projectile : MonoBehaviour
 {
     [SerializeField] private float speed = 10f;
+    [SerializeField] private float lifetime = 5f;
 
     private float damage;
     private Transform target;
+    private float timer;
 
     public void SetTarget(Transform newTarget)
     {
@@ -19,34 +21,31 @@ public class Projectile : MonoBehaviour
 
     void Update()
     {
-        if (target == null)
+        timer += Time.deltaTime;
+        if (timer >= lifetime)
         {
             Destroy(gameObject);
             return;
         }
 
-        Vector3 direction = target.position - transform.position;
-        float distanceThisFrame = speed * Time.deltaTime;
-
-        if (direction.magnitude <= distanceThisFrame)
+        // 🔑 THIS IS THE IMPORTANT PART
+        if (!target) // catches destroyed targets
         {
-            HitTarget();
+            Destroy(gameObject);
             return;
         }
 
-        transform.Translate(direction.normalized * distanceThisFrame, Space.World);
-        transform.rotation = Quaternion.LookRotation(direction);
+        Vector2 direction = (target.position - transform.position);
+        transform.position += (Vector3)(direction.normalized * speed * Time.deltaTime);
     }
 
-    void HitTarget()
+    void OnTriggerEnter2D(Collider2D other)
     {
-        EnemyBase enemy = target.GetComponent<EnemyBase>();
+        EnemyBase enemy = other.GetComponent<EnemyBase>();
         if (enemy != null)
         {
             enemy.TakeDamage(damage);
+            Destroy(gameObject);
         }
-
-        Destroy(gameObject);
     }
 }
-
