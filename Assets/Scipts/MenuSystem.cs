@@ -21,12 +21,15 @@
 //     }
 
 
+<<<<<<< Updated upstream
 //     public void Pause()
 //     {
 //         if (pausePanel != null) pausePanel.SetActive(true);
 //         Time.timeScale = 0f;
 
 
+=======
+>>>>>>> Stashed changes
 
 //     public void Pause()
 //     {
@@ -34,32 +37,44 @@
 //         pausePanel.SetActive(true);
 
 //     Time.timeScale = 0f;
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 //     }
 
 //     public void Resume()
 //     {
+<<<<<<< Updated upstream
 
 //         if (pausePanel != null) pausePanel.SetActive(false);
 //         Time.timeScale = 1f;
 
+=======
+>>>>>>> Stashed changes
 //     if (pausePanel != null)
 //         pausePanel.SetActive(false);
 
 //     Time.timeScale = 1f;
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 //     }
 
 //     void Update()
 //     {
 //         if (Input.GetKeyDown(KeyCode.Escape))
 //         {
+<<<<<<< Updated upstream
 
 //             if (pausePanel == null) return;
 
 //             if (pausePanel.activeSelf) Resume();
 //             else Pause();
 
+=======
+>>>>>>> Stashed changes
 //         if (pausePanel == null) 
 //             return;
     
@@ -67,11 +82,15 @@
 //             Resume();
 //         else
 //             Pause();
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 //         }
 //     }
 // }
 // =======
+<<<<<<< Updated upstream
 
 // // <<<<<<< Updated upstream
 // // using UnityEngine;
@@ -152,6 +171,8 @@
 // // // }
 // // >>>>>>> Stashed changes
 
+=======
+>>>>>>> Stashed changes
 // // using UnityEngine;
 
 // // public class MenuSystem
@@ -175,4 +196,7 @@
 
 // // }
 // >>>>>>> Stashed changes
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
