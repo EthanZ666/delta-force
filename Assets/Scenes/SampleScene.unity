@@ -509,11 +509,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
-=======
->>>>>>> Stashed changes
+
 --- !u!1 &715410490
 GameObject:
   m_ObjectHideFlags: 0
@@ -685,10 +681,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Projectile
   speed: 10
   maxLifetime: 5
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
+
 --- !u!1 &1524412423
 GameObject:
   m_ObjectHideFlags: 0
@@ -701,15 +694,13 @@ GameObject:
   - component: {fileID: 1524412425}
   - component: {fileID: 1524412424}
   m_Layer: 0
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
+
   m_Name: HackClaw
-=======
+
   m_Name: Square
->>>>>>> Stashed changes
-=======
+
   m_Name: Square
->>>>>>> Stashed changes
+
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -727,15 +718,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a45c4754577a5a4eab052f2053ae165, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HackClaw
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
+
   projectilePrefab: {fileID: 214628657306505977, guid: ee29c950a7f5e7f4e9c16d1c0cb1ad8e, type: 3}
-=======
+
   projectilePrefab: {fileID: 715410490}
->>>>>>> Stashed changes
-=======
+
+
   projectilePrefab: {fileID: 715410490}
->>>>>>> Stashed changes
+
   firePoint: {fileID: 2063772352}
 --- !u!212 &1524412425
 SpriteRenderer:
@@ -835,31 +825,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2063772351}
   serializedVersion: 2
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
+
   m_LocalRotation: {x: -0, y: -0, z: -0.7007003, w: -0.71345586}
   m_LocalPosition: {x: -0.04110515, y: 0.7760556, z: 0}
-=======
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.04110515, y: 1.070016, z: 0}
->>>>>>> Stashed changes
-=======
+
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.04110515, y: 1.070016, z: 0}
->>>>>>> Stashed changes
+
   m_LocalScale: {x: 0.8220999, y: 0.29396042, z: 0.35079002}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1524412426}
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
+
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -271.034}
-=======
+
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
->>>>>>> Stashed changes
-=======
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
->>>>>>> Stashed changes
+
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -867,12 +851,3 @@ SceneRoots:
   - {fileID: 519420032}
   - {fileID: 619394802}
   - {fileID: 1524412426}
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
-  - {fileID: 715410492}
->>>>>>> Stashed changes
-=======
-  - {fileID: 715410492}
->>>>>>> Stashed changes
-  - {fileID: 513263633}
