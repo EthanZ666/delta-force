@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 0deec736da2959c4bad10e3908552c02
+guid: c43353f54f78c6c449fe6bb8122d0dc7
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 4125636645744980110
-    second: Luna_0
+      213: 6612564057283936460
+    second: Screenshot 2026-01-05 135451_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Luna_0
+      name: Screenshot 2026-01-05 135451_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 195
-        height: 390
+        width: 456
+        height: 552
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e80b6f5bba4314930800000000000000
-      internalID: 4125636645744980110
+      spriteID: cc0cce8a9fb84cb50800000000000000
+      internalID: 6612564057283936460
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Luna_0: 4125636645744980110
+      Screenshot 2026-01-05 135451_0: 6612564057283936460
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
