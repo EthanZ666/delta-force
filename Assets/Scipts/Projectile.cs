@@ -28,12 +28,12 @@ public class Projectile : MonoBehaviour
             return;
         }
 
-<<<<<<< Updated upstream
+
         if (!target) 
-=======
+
         // 🔑 THIS IS THE IMPORTANT PART
         if (!target) // catches destroyed targets
->>>>>>> Stashed changes
+
         {
             Destroy(gameObject);
             return;

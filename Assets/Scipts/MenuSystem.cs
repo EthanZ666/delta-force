@@ -7,11 +7,8 @@
 //     [Header("Pause Menu Panel (optional)")]
 //     public GameObject pausePanel;
 
-<<<<<<< Updated upstream
-=======
 
 
->>>>>>> Stashed changes
 //     public void LoadScene(string sceneName)
 //     {
 //         Time.timeScale = 1f;
@@ -23,12 +20,12 @@
 //         Application.Quit();
 //     }
 
-<<<<<<< Updated upstream
+
 //     public void Pause()
 //     {
 //         if (pausePanel != null) pausePanel.SetActive(true);
 //         Time.timeScale = 0f;
-=======
+
 
 
 //     public void Pause()
@@ -37,32 +34,32 @@
 //         pausePanel.SetActive(true);
 
 //     Time.timeScale = 0f;
->>>>>>> Stashed changes
+
 //     }
 
 //     public void Resume()
 //     {
-<<<<<<< Updated upstream
+
 //         if (pausePanel != null) pausePanel.SetActive(false);
 //         Time.timeScale = 1f;
-=======
+
 //     if (pausePanel != null)
 //         pausePanel.SetActive(false);
 
 //     Time.timeScale = 1f;
->>>>>>> Stashed changes
+
 //     }
 
 //     void Update()
 //     {
 //         if (Input.GetKeyDown(KeyCode.Escape))
 //         {
-<<<<<<< Updated upstream
+
 //             if (pausePanel == null) return;
 
 //             if (pausePanel.activeSelf) Resume();
 //             else Pause();
-=======
+
 //         if (pausePanel == null) 
 //             return;
     
@@ -70,12 +67,12 @@
 //             Resume();
 //         else
 //             Pause();
->>>>>>> Stashed changes
+
 //         }
 //     }
 // }
 // =======
-<<<<<<< Updated upstream
+
 // // <<<<<<< Updated upstream
 // // using UnityEngine;
 // // using UnityEngine.SceneManagement;
@@ -154,7 +151,7 @@
 
 // // // }
 // // >>>>>>> Stashed changes
-=======
+
 // // using UnityEngine;
 
 // // public class MenuSystem
@@ -178,4 +175,4 @@
 
 // // }
 // >>>>>>> Stashed changes
->>>>>>> Stashed changes
+
