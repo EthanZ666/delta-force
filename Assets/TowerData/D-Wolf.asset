@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f13cec989ca88e145a95016a844426be, type: 3}
+  m_Name: D-Wolf
+  m_EditorClassIdentifier: Assembly-CSharp::TowerData
+  towerName: D-Wolf
+  prefab: {fileID: 2967962188473493509, guid: ec30dc9a944467f498377053d644bf4b, type: 3}
+  price: 80
+  icon: {fileID: 9181473264424648784, guid: 08513cce25671974b98e1c8c30a6dffb, type: 3}

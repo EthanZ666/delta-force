@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f13cec989ca88e145a95016a844426be, type: 3}
+  m_Name: Luna
+  m_EditorClassIdentifier: Assembly-CSharp::TowerData
+  towerName: Luna
+  prefab: {fileID: 1281399097376253162, guid: 5cfc3626edaa361408da94ddf3505af9, type: 3}
+  price: 70
+  icon: {fileID: 7024394194364677811, guid: 9992ca9c8ff50bd4aa86118f0486b222, type: 3}
