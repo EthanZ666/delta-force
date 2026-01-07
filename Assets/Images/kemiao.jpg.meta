@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 7796efbc84f0b964a9102c12ea546f46
+guid: b9f0fd87ebcda0042baf7af5d4d26b4b
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 947896167313955661
-    second: "\u6211\u5E05\u7684\u8981\u547D\uFF5E_1_\u6CA1\u94B1\u5403\u996D_\u6765\u81EA\u5C0F\u7EA2\u4E66\u7F51\u9875\u7248_0"
+      213: 7796140861258928445
+    second: kemiao_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: "\u6211\u5E05\u7684\u8981\u547D\uFF5E_1_\u6CA1\u94B1\u5403\u996D_\u6765\u81EA\u5C0F\u7EA2\u4E66\u7F51\u9875\u7248_0"
+      name: kemiao_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 640
-        height: 853
+        width: 768
+        height: 924
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: d4bd3b0ca8a972d00800000000000000
-      internalID: 947896167313955661
+      spriteID: d311f3ebec4713c60800000000000000
+      internalID: 7796140861258928445
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      "\u6211\u5E05\u7684\u8981\u547D\uFF5E_1_\u6CA1\u94B1\u5403\u996D_\u6765\u81EA\u5C0F\u7EA2\u4E66\u7F51\u9875\u7248_0": 947896167313955661
+      kemiao_0: 7796140861258928445
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
