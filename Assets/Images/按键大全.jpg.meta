@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 0deec736da2959c4bad10e3908552c02
+guid: 201c885073cd95b4ebb0b385d59e7924
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 4125636645744980110
-    second: Luna_0
+      213: 5842695985301500
+    second: "\u6309\u952E\u5927\u5168_0"
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Luna_0
+      name: "\u6309\u952E\u5927\u5168_0"
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 195
-        height: 390
+        width: 600
+        height: 419
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e80b6f5bba4314930800000000000000
-      internalID: 4125636645744980110
+      spriteID: cf70cbaa6e1c41000800000000000000
+      internalID: 5842695985301500
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Luna_0: 4125636645744980110
+      "\u6309\u952E\u5927\u5168_0": 5842695985301500
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

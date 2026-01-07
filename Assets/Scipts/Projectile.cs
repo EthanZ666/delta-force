@@ -31,14 +31,6 @@ public class Projectile : MonoBehaviour
 
 
         if (!target) 
-
-        // 🔑 THIS IS THE IMPORTANT PART
-        if (!target) // catches destroyed targets
-
-
-        // 🔑 THIS IS THE IMPORTANT PART
-        if (!target) // catches destroyed targets
-
         {
             Destroy(gameObject);
             return;

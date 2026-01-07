@@ -1,13 +1,13 @@
 using UnityEngine;
 
-public class HackClaw : Tower
+public class Luna : Tower
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
         damage = 5f;
-        fireRate = 0.65f;
-        range = 8f;
+        fireRate = 0.5f;
+        range = 10f;
         
     }
     
