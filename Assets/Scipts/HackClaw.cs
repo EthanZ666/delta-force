@@ -6,7 +6,7 @@ public class HackClaw : Tower
     void Awake()
     {
         damage = 5f;
-        fireRate = 0.65f;
+        fireRate = 0.5f;
         range = 8f;
         
     }
