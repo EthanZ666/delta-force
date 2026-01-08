@@ -15,3 +15,4 @@ public class MusicPlayer : MonoBehaviour
         musicPlayer.clip = songs[index];
         musicPlayer.Play();
     }
+}
