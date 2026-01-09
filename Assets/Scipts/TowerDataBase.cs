@@ -1,19 +1,13 @@
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class TowerDatabase : MonoBehaviour
 {
-    public List<TowerData> towers = new();
+    public List<TowerData> allTowers;
 
     public TowerData GetRandomTower()
     {
-        if (towers == null || towers.Count == 0)
-        {
-            Debug.LogError("TowerDatabase has no towers!");
-            return null;
-        }
-
-        int index = Random.Range(0, towers.Count);
-        return towers[index];
+        if (allTowers.Count == 0) return null;
+        return allTowers[Random.Range(0, allTowers.Count)];
     }
 }

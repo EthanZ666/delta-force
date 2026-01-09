@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d49af977deaa8c4483713dbb24343d8, type: 3}
+  m_Name: Luna
+  m_EditorClassIdentifier: Assembly-CSharp::TowerData
+  towerName: Luna
+  icon: {fileID: 4125636645744980110, guid: 0deec736da2959c4bad10e3908552c02, type: 3}
+  towerPrefab: {fileID: 2360239949385669434, guid: e0647e0dc2de4af4abe47b8bc1443db1, type: 3}
+  price: 90
+  damage: 8
+  fireRate: 0.6
+  range: 10

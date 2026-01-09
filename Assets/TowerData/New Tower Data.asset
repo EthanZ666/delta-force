@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d49af977deaa8c4483713dbb24343d8, type: 3}
+  m_Name: New Tower Data
+  m_EditorClassIdentifier: Assembly-CSharp::TowerData
+  towerName: HackClaw
+  icon: {fileID: 8917771735433350722, guid: 2a91e32839c7bec4d8e0108602e5d1a2, type: 3}
+  towerPrefab: {fileID: 4391554628350508584, guid: df90b90c84be60548892152311e540a0, type: 3}
+  price: 75
+  damage: 6
+  fireRate: 1
+  range: 8
