@@ -1,5 +1,11 @@
 // using UnityEngine;
 
+// void Start()
+// {
+//     Array.Sort(songs, (a, b) =>
+//         string.Compare(a.name, b.name, StringComparison.OrdinalIgnoreCase));
+// }
+
 // public AudioClip BinarySearch(string searchName)
 // {
 //     int left = 0;
