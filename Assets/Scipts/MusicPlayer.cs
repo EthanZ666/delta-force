@@ -2,42 +2,36 @@ using UnityEngine;
 
 public class MusicPlayer : MonoBehaviour
 {
+    public static MusicPlayer Instance;
+
     public AudioSource musicPlayer;
     public AudioClip[] songs;
-    
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-  
-    public void PlayMusic(int index)
+
+    private void Awake()
     {
-        if (songs == null || songs.Length == 0)
+        if (Instance != null && Instance != this)
         {
-            Debug.LogWarning("Songs array is empty.");
+            Destroy(gameObject); // 防止同场景/跨场景重复
             return;
         }
 
-        if (index < 0 || index >= songs.Length)
-        {
-            Debug.LogWarning("Invalid song index: " + index);
-            return;
-        }
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
 
-        musicPlayer.clip = songs[index];
-        musicPlayer.Play();
-
-        Debug.Log("Playing song index: " + index);
+        if (musicPlayer == null)
+            musicPlayer = GetComponent<AudioSource>();
     }
-
 
     private void Start()
     {
-        if (songs != null && songs.Length > 0)
+        // 你原本的 Start 播放逻辑保留即可
+        if (musicPlayer != null && songs != null && songs.Length > 0 && musicPlayer.clip == null)
         {
-            PlayMusic(0);
-            Debug.Log("Auto-playing music: index 0");
-        }
-    else
-        {
-            Debug.LogWarning("No songs assigned in MusicPlayer.");
+            musicPlayer.clip = songs[0];
+            musicPlayer.loop = true;
+            musicPlayer.Play();
         }
     }
+
+    public AudioSource GetSource() => musicPlayer;
 }
