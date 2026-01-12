@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3d49af977deaa8c4483713dbb24343d8, type: 3}
-  m_Name: New Tower Data
+  m_Name: HackClaw
   m_EditorClassIdentifier: Assembly-CSharp::TowerData
   towerName: HackClaw
   icon: {fileID: 8917771735433350722, guid: 2a91e32839c7bec4d8e0108602e5d1a2, type: 3}
