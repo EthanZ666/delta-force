@@ -24,14 +24,33 @@ public class TowerShop : MonoBehaviour
             available.Add(database.GetRandomTower());
         }
 
-        SortByPrice();
+        BubbleSortByEfficiency(available);
         RenderShop();
     }
-
-    void SortByPrice()
+    float CalculateEfficiency(TowerData tower)
     {
-        available.Sort((a, b) => a.price.CompareTo(b.price));
+        float efficiency = (tower.damage*10 + tower.range*5 )/ tower.price;
+        return efficiency;
     }
+
+    void BubbleSortByEfficiency(List<TowerData> list)
+{
+    int n = list.Count;
+
+    for (int cursor = 0; cursor < n - 1 ; cursor++)
+    {
+        for (int j = 0; j < n - 1; j++)
+        {
+            if (CalculateEfficiency(list[j]) < CalculateEfficiency(list[j + 1]))
+            {
+                TowerData temp = list[j];
+                list[j] = list[j + 1];
+                list[j + 1] = temp;
+            }
+        }
+    }
+}
+
 
     void RenderShop()
     {
