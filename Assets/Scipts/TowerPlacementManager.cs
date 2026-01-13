@@ -5,13 +5,13 @@ public class TowerPlacementManager : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private Camera mainCamera;
-    [SerializeField] private MoneyManager money;                 
-    [SerializeField] private GameObject rangeIndicatorPrefab;    
+    [SerializeField] private MoneyManager money;
+    [SerializeField] private GameObject rangeIndicatorPrefab;
 
     [Header("Placement Rules (2D)")]
     [SerializeField] private LayerMask placeableMask;            // Buildable ground
     [SerializeField] private LayerMask blockedMask;              // Non-placeable (path, water, rocks, etc.)
-    [SerializeField] private LayerMask towerMask;                
+    [SerializeField] private LayerMask towerMask;
     [SerializeField] private float towerFootprintRadius = 0.45f; // Placeholder tower size
 
     [Header("Visuals")]
@@ -44,7 +44,6 @@ public class TowerPlacementManager : MonoBehaviour
             rangeIndicatorObj.transform.position = worldPos;
 
         bool valid = IsValidPlacement(worldPos);
-
         SetIndicatorColour(valid);
 
         // Cancel any time (optional but nice)
@@ -76,7 +75,10 @@ public class TowerPlacementManager : MonoBehaviour
         if (ghostTowerObj != null)
             CancelPlacement();
 
-        // If you have money system, require affordability before even starting placement
+        // Sanity
+        cost = Mathf.Max(0, cost);
+
+        // If you use money, require affordability before even starting placement
         if (money != null && !money.CanAfford(cost))
             return;
 
@@ -90,18 +92,19 @@ public class TowerPlacementManager : MonoBehaviour
             Debug.LogError("Tower prefab must have a component that inherits from Tower.");
             Destroy(ghostTowerObj);
             ghostTowerObj = null;
+            pendingCost = 0;
             return;
         }
 
         // Disable colliders so the ghost doesn't block itself / interact
         disabledColliders = ghostTowerObj.GetComponentsInChildren<Collider2D>(true);
         foreach (var c in disabledColliders)
-            c.enabled = false;
+            if (c != null) c.enabled = false;
 
         // Disable scripts so it doesn't shoot while placing
         disabledScripts = ghostTowerObj.GetComponentsInChildren<MonoBehaviour>(true);
         foreach (var s in disabledScripts)
-            s.enabled = false;
+            if (s != null) s.enabled = false;
 
         // Make tower semi-transparent
         SetAllSpriteAlpha(ghostTowerObj, ghostAlpha);
@@ -122,23 +125,27 @@ public class TowerPlacementManager : MonoBehaviour
 
     private void PlaceTower()
     {
-        // Spend money ONLY when placement succeeds
         if (money != null)
         {
             if (!money.TrySpend(pendingCost))
             {
-                // If money changed mid-placement cancel
                 CancelPlacement();
                 return;
             }
         }
 
         // Turn ghost into a real tower
-        foreach (var s in disabledScripts)
-            if (s != null) s.enabled = true;
+        if (disabledScripts != null)
+        {
+            foreach (var s in disabledScripts)
+                if (s != null) s.enabled = true;
+        }
 
-        foreach (var c in disabledColliders)
-            if (c != null) c.enabled = true;
+        if (disabledColliders != null)
+        {
+            foreach (var c in disabledColliders)
+                if (c != null) c.enabled = true;
+        }
 
         SetAllSpriteAlpha(ghostTowerObj, 1f);
 
@@ -176,6 +183,8 @@ public class TowerPlacementManager : MonoBehaviour
 
     private Vector3 GetMouseWorldPosition()
     {
+        if (mainCamera == null) mainCamera = Camera.main;
+
         Vector3 mouse = Input.mousePosition;
         Vector3 world = mainCamera.ScreenToWorldPoint(mouse);
         world.z = 0f;
@@ -206,17 +215,21 @@ public class TowerPlacementManager : MonoBehaviour
         if (rangeIndicatorSR == null) return;
 
         // Grey = valid, Red = invalid
-        Color c = isValid ? new Color(0.6f, 0.6f, 0.6f, indicatorAlpha)
-                          : new Color(1f, 0f, 0f, indicatorAlpha);
+        Color c = isValid
+            ? new Color(0.6f, 0.6f, 0.6f, indicatorAlpha)
+            : new Color(1f, 0f, 0f, indicatorAlpha);
 
         rangeIndicatorSR.color = c;
     }
 
     private void SetAllSpriteAlpha(GameObject root, float alpha)
     {
+        if (root == null) return;
+
         var sprites = root.GetComponentsInChildren<SpriteRenderer>(true);
         foreach (var sr in sprites)
         {
+            if (sr == null) continue;
             Color c = sr.color;
             c.a = alpha;
             sr.color = c;

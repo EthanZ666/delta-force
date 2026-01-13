@@ -1,27 +1,46 @@
+using System;
 using UnityEngine;
 
-public class MoneyManager : MonoBehaviour
+public sealed class MoneyManager : MonoBehaviour
 {
-    [SerializeField] private int startingMoney = 200;
+    [Header("Starting Balance")]
+    [SerializeField] private int startingBalance = 200;
 
-    public int Money { get; private set; }
+    private int balance;
 
-    void Awake()
+    public int Balance => balance;
+
+    public event Action<int> BalanceChanged;
+
+    private void Awake()
     {
-        Money = startingMoney;
+        balance = Mathf.Max(0, startingBalance);
+        BalanceChanged?.Invoke(balance);
     }
 
-    public bool CanAfford(int amount) => Money >= amount;
+    public bool CanAfford(int amount)
+    {
+        if (amount <= 0) return true;
+        return balance >= amount;
+    }
 
     public bool TrySpend(int amount)
     {
-        if (!CanAfford(amount)) return false;
-        Money -= amount;
+        if (amount <= 0) return true;
+        if (balance < amount) return false;
+
+        balance -= amount;
+        BalanceChanged?.Invoke(balance);
         return true;
     }
 
     public void Add(int amount)
     {
-        Money += amount;
+        if (amount <= 0) return;
+
+        long newValue = (long)balance + amount;
+        balance = (newValue > int.MaxValue) ? int.MaxValue : (int)newValue;
+
+        BalanceChanged?.Invoke(balance);
     }
 }
