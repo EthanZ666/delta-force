@@ -46,7 +46,7 @@ public class TowerPlacementManager : MonoBehaviour
         bool valid = IsValidPlacement(worldPos);
         SetIndicatorColour(valid);
 
-        // Cancel any time (optional but nice)
+        // Cancel on right click or escape
         if (Input.GetKeyDown(KeyCode.Escape) || Input.GetMouseButtonDown(1))
         {
             CancelPlacement();

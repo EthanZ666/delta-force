@@ -6,6 +6,11 @@ public abstract class EnemyBase : MonoBehaviour
     [Header("Core Stats")]
     [SerializeField] private float maxHealth = 100f;
 
+    [Header("Enemy Damage")]
+    [SerializeField] protected float damage = 10f;
+
+    public virtual float Damage => damage;
+
     [Header("Targeting")]
     public virtual bool IsCamouflaged => false;
 
@@ -29,7 +34,6 @@ public abstract class EnemyBase : MonoBehaviour
 
     protected virtual void AbilityUpdate() { }
 
-    // Tower calls this directly ETHAN ZHAO
     public void TakeDamage(float amount)
     {
         if (IsDead) return;
@@ -49,7 +53,7 @@ public abstract class EnemyBase : MonoBehaviour
     }
 
     protected virtual float ModifyIncomingDamage(float amount) => amount;
-    protected virtual void OnDamaged(float damage) { }
+    protected virtual void OnDamaged(float damageTaken) { }
 
     protected void Heal(float amount)
     {
