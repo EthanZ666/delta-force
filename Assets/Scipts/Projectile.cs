@@ -28,17 +28,7 @@ public class Projectile : MonoBehaviour
             return;
         }
 
-
-
         if (!target) 
-
-        // 🔑 THIS IS THE IMPORTANT PART
-        if (!target) // catches destroyed targets
-
-
-        // 🔑 THIS IS THE IMPORTANT PART
-        if (!target) // catches destroyed targets
-
         {
             Destroy(gameObject);
             return;
@@ -46,6 +36,7 @@ public class Projectile : MonoBehaviour
 
         Vector2 direction = (target.position - transform.position);
         transform.position += (Vector3)(direction.normalized * speed * Time.deltaTime);
+        // Done by GPT for tracing the enemy
     }
 
     void OnTriggerEnter2D(Collider2D other)

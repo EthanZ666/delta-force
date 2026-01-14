@@ -16,6 +16,6 @@ MonoBehaviour:
   icon: {fileID: -905844136737241655, guid: 6f315fe720d971d4eb1d6a8e750899c2, type: 3}
   towerPrefab: {fileID: 3222260021686753148, guid: 89c91a573d3b2a84b97f018b912d2d95, type: 3}
   price: 100
-  damage: 10
+  damage: 11
   fireRate: 0.8
-  range: 4
+  range: 5

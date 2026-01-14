@@ -11,6 +11,8 @@ public abstract class Tower : MonoBehaviour
 
     [Header("Shooting")]
     [SerializeField] private GameObject projectilePrefab;
+    // Aggregation that attaches an object of the Projectile Class - able to live
+    // With out this tower class so it is aggregation
     [SerializeField] private Transform firePoint;
 
     protected Transform target;
@@ -37,12 +39,15 @@ public abstract class Tower : MonoBehaviour
 
     protected void Shoot()
     {
+        // Spawning copies of the aggregated object
         GameObject projectile = Instantiate(
             projectilePrefab,
             firePoint.position,
             firePoint.rotation
         );
 
+        // Assigning damage and target for the copies, using methods of
+        // the aggregated class
         Projectile p = projectile.GetComponent<Projectile>();
         if (p != null)
         {

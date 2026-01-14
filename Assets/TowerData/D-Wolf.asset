@@ -18,4 +18,4 @@ MonoBehaviour:
   price: 70
   damage: 5.5
   fireRate: 1.5
-  range: 5
+  range: 6
