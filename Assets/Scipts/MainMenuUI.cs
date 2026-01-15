@@ -1,14 +1,11 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
-
-// if (FindObjectOfType<UnityEngine.EventSystems.EventSystem>() == null)
-//     {
-//         var uiEventSystem = new GameObject("EventSystem");
-//         uiEventSystem.AddComponent<UnityEngine.EventSystems.EventSystem>();
-//         uiEventSystem.AddComponent<UnityEngine.EventSystems.StandaloneInputModule>();
-//     }
+#if ENABLE_INPUT_SYSTEM
+using UnityEngine.InputSystem.UI;
+#endif
 
 public class MainMenuOverlayUI : MonoBehaviour
 {
@@ -21,15 +18,16 @@ public class MainMenuOverlayUI : MonoBehaviour
     [SerializeField] private string startSceneName = "MapSelectScene";
     [SerializeField] private string settingsSceneName = "SettingsScene";
 
-    // 你可以微调这些（对齐你背景上的位置）
     [Header("Layout (tweak these numbers)")]
     [SerializeField] private Vector2 startAnchoredPos = new Vector2(0, -70);
     [SerializeField] private Vector2 settingsAnchoredPos = new Vector2(0, -230);
-
     [SerializeField] private Vector2 buttonSize = new Vector2(520, 140);
 
     private void Start()
     {
+        EnsureEventSystem();
+
+        // Load sprites from Resources
         Sprite bg = Resources.Load<Sprite>(backgroundPath);
         if (bg == null)
         {
@@ -54,8 +52,29 @@ public class MainMenuOverlayUI : MonoBehaviour
         CreateUI(bg, startSprite, settingsSprite);
     }
 
+    private void EnsureEventSystem()
+    {
+        // If another scene/manager already made one, do nothing.
+        if (EventSystem.current != null) return;
+
+        var esGO = new GameObject("EventSystem");
+        esGO.AddComponent<EventSystem>();
+
+#if ENABLE_INPUT_SYSTEM
+        // New Input System: required for UI clicks when InputManager is disabled
+        esGO.AddComponent<InputSystemUIInputModule>();
+#else
+        // Old Input System fallback
+        esGO.AddComponent<StandaloneInputModule>();
+#endif
+    }
+
     private void CreateUI(Sprite backgroundSprite, Sprite startSprite, Sprite settingsSprite)
     {
+        // If a previous run left a canvas (rare), clean it.
+        var existing = GameObject.Find("MainMenuCanvas");
+        if (existing != null) Destroy(existing);
+
         // Canvas
         var canvasGO = new GameObject("MainMenuCanvas");
         var canvas = canvasGO.AddComponent<Canvas>();
@@ -64,15 +83,17 @@ public class MainMenuOverlayUI : MonoBehaviour
         var scaler = canvasGO.AddComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = new Vector2(1920, 1080);
+        scaler.matchWidthOrHeight = 0.5f;
 
         canvasGO.AddComponent<GraphicRaycaster>();
 
-        // Background
+        // Background (IMPORTANT: do not block clicks)
         var bgGO = new GameObject("Background");
         bgGO.transform.SetParent(canvasGO.transform, false);
         var bgImage = bgGO.AddComponent<Image>();
         bgImage.sprite = backgroundSprite;
         bgImage.preserveAspect = true;
+        bgImage.raycastTarget = false; // ✅ prevents eating clicks
 
         var bgRT = bgImage.rectTransform;
         bgRT.anchorMin = Vector2.zero;
@@ -80,44 +101,63 @@ public class MainMenuOverlayUI : MonoBehaviour
         bgRT.offsetMin = Vector2.zero;
         bgRT.offsetMax = Vector2.zero;
 
-        // Start button (visible sprite + click)
+        // Start Button
         CreateSpriteButton(
             parent: canvasGO.transform,
             name: "StartButton",
             sprite: startSprite,
             anchoredPos: startAnchoredPos,
             size: buttonSize,
-            onClick: () => LoadSceneSafe(startSceneName)
+            onClick: () =>
+            {
+                Debug.Log("START CLICKED");
+                LoadSceneSafe(startSceneName);
+            }
         );
 
-        // Settings button (visible sprite + click)
+        // Settings Button
         CreateSpriteButton(
             parent: canvasGO.transform,
             name: "SettingsButton",
             sprite: settingsSprite,
             anchoredPos: settingsAnchoredPos,
             size: buttonSize,
-            onClick: () => LoadSceneSafe(settingsSceneName)
+            onClick: () =>
+            {
+                Debug.Log("SETTINGS CLICKED");
+                LoadSceneSafe(settingsSceneName);
+            }
         );
     }
 
-    private void CreateSpriteButton(Transform parent, string name, Sprite sprite, Vector2 anchoredPos, Vector2 size, UnityEngine.Events.UnityAction onClick)
+    private void CreateSpriteButton(Transform parent, string name, Sprite sprite, Vector2 anchoredPos, Vector2 size, System.Action onClick)
     {
         var btnObj = new GameObject(name);
         btnObj.transform.SetParent(parent, false);
 
+        // RectTransform
+        var rt = btnObj.AddComponent<RectTransform>();
+        rt.sizeDelta = size;
+        rt.anchoredPosition = anchoredPos;
+        rt.anchorMin = new Vector2(0.5f, 0.5f);
+        rt.anchorMax = new Vector2(0.5f, 0.5f);
+        rt.pivot = new Vector2(0.5f, 0.5f);
+
+        // Image
         var img = btnObj.AddComponent<Image>();
         img.sprite = sprite;
         img.preserveAspect = true;
+        img.raycastTarget = true; // ✅ make sure it receives clicks
 
+        // Button
         var btn = btnObj.AddComponent<Button>();
-        btn.onClick.AddListener(onClick);
+        btn.transition = Selectable.Transition.None;
 
-        var rt = btnObj.GetComponent<RectTransform>();
-        rt.sizeDelta = size;
-        rt.anchorMin = new Vector2(0.5f, 0.5f);
-        rt.anchorMax = new Vector2(0.5f, 0.5f);
-        rt.anchoredPosition = anchoredPos;
+        btn.onClick.AddListener(() =>
+        {
+            try { onClick?.Invoke(); }
+            catch (System.Exception e) { Debug.LogError(e); }
+        });
     }
 
     private void LoadSceneSafe(string sceneName)
@@ -128,6 +168,7 @@ public class MainMenuOverlayUI : MonoBehaviour
             return;
         }
 
+        // This checks if the scene is in Build Settings
         if (!Application.CanStreamedLevelBeLoaded(sceneName))
         {
             Debug.LogError($"Cannot load scene '{sceneName}'. Add it to Build Settings.");
