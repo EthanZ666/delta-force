@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 747c4d1476599b24ebd1be5c003f5ff3
+guid: 5cfb2cab03fb7c247a479f6154576939
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7367446493177825948
-    second: "\u65E0\u6807\u98981072_20260114190732_0"
+      213: -2834816866031520189
+    second: StartButton_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -152,13 +152,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: "\u65E0\u6807\u98981072_20260114190732_0"
+      name: StartButton_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 1800
-        height: 1300
+        x: 613
+        y: 391
+        width: 537
+        height: 265
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -167,8 +167,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 4653078e27291c990800000000000000
-      internalID: -7367446493177825948
+      spriteID: 346b7e07415b8a8d0800000000000000
+      internalID: -2834816866031520189
       vertices: []
       indices: 
       edges: []
@@ -187,7 +187,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      "\u65E0\u6807\u98981072_20260114190732_0": -7367446493177825948
+      StartButton_0: -2834816866031520189
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

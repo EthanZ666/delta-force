@@ -4,96 +4,115 @@ using UnityEngine.UI;
 
 public class MainMenuOverlayUI : MonoBehaviour
 {
-    [Header("Resources path: Resources/Images/MainMenuScene.png")]
+    [Header("Resources paths (no extension)")]
     [SerializeField] private string backgroundPath = "Images/MainMenuScene";
+    [SerializeField] private string startButtonPath = "Images/StartButton";
+    [SerializeField] private string settingsButtonPath = "Images/SettingButton";
 
     [Header("Scene Names")]
-    [SerializeField] private string startSceneName = "MapSelectScene";     // 你开始按钮要去的场景
-    [SerializeField] private string settingsSceneName = "SettingsScene";   // 你设置按钮要去的场景(没有就先不填)
+    [SerializeField] private string startSceneName = "MapSelectScene";
+    [SerializeField] private string settingsSceneName = "SettingsScene";
+
+    // 你可以微调这些（对齐你背景上的位置）
+    [Header("Layout (tweak these numbers)")]
+    [SerializeField] private Vector2 startAnchoredPos = new Vector2(0, -70);
+    [SerializeField] private Vector2 settingsAnchoredPos = new Vector2(0, -230);
+
+    [SerializeField] private Vector2 buttonSize = new Vector2(520, 140);
 
     private void Start()
     {
-        Sprite backgroundSprite = Resources.Load<Sprite>(backgroundPath);
-        if (backgroundSprite == null)
+        Sprite bg = Resources.Load<Sprite>(backgroundPath);
+        if (bg == null)
         {
-            Debug.LogError($"MainMenu image not found at Resources/{backgroundPath}.png");
+            Debug.LogError($"MainMenu background not found at Resources/{backgroundPath}.png");
             return;
         }
 
-        CreateUI(backgroundSprite);
+        Sprite startSprite = Resources.Load<Sprite>(startButtonPath);
+        if (startSprite == null)
+        {
+            Debug.LogError($"StartButton sprite not found at Resources/{startButtonPath}.png");
+            return;
+        }
+
+        Sprite settingsSprite = Resources.Load<Sprite>(settingsButtonPath);
+        if (settingsSprite == null)
+        {
+            Debug.LogError($"SettingButton sprite not found at Resources/{settingsButtonPath}.png");
+            return;
+        }
+
+        CreateUI(bg, startSprite, settingsSprite);
     }
 
-    void CreateUI(Sprite backgroundSprite)
+    private void CreateUI(Sprite backgroundSprite, Sprite startSprite, Sprite settingsSprite)
     {
         // Canvas
         var canvasGO = new GameObject("MainMenuCanvas");
         var canvas = canvasGO.AddComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        canvasGO.AddComponent<CanvasScaler>().uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+
+        var scaler = canvasGO.AddComponent<CanvasScaler>();
+        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        scaler.referenceResolution = new Vector2(1920, 1080);
+
         canvasGO.AddComponent<GraphicRaycaster>();
 
-        // 背景图
-        GameObject bgGO = new GameObject("Background");
+        // Background
+        var bgGO = new GameObject("Background");
         bgGO.transform.SetParent(canvasGO.transform, false);
         var bgImage = bgGO.AddComponent<Image>();
         bgImage.sprite = backgroundSprite;
-        bgImage.rectTransform.anchorMin = Vector2.zero;
-        bgImage.rectTransform.anchorMax = Vector2.one;
-        bgImage.rectTransform.offsetMin = Vector2.zero;
-        bgImage.rectTransform.offsetMax = Vector2.zero;
         bgImage.preserveAspect = true;
 
-        // ✅ START 按钮（你需要把位置对准你图上的 START 框）
-        var startBtn = CreateTransparentButton(
+        var bgRT = bgImage.rectTransform;
+        bgRT.anchorMin = Vector2.zero;
+        bgRT.anchorMax = Vector2.one;
+        bgRT.offsetMin = Vector2.zero;
+        bgRT.offsetMax = Vector2.zero;
+
+        // Start button (visible sprite + click)
+        CreateSpriteButton(
+            parent: canvasGO.transform,
             name: "StartButton",
-            anchoredPos: new Vector2(0, -70),   // 这两个数你自己微调
-            size: new Vector2(420, 120),
+            sprite: startSprite,
+            anchoredPos: startAnchoredPos,
+            size: buttonSize,
             onClick: () => LoadSceneSafe(startSceneName)
         );
-        startBtn.transform.SetParent(canvasGO.transform, false);
 
-        // ✅ SETTINGS 按钮（对准 SETTINGS 框）
-        var settingsBtn = CreateTransparentButton(
+        // Settings button (visible sprite + click)
+        CreateSpriteButton(
+            parent: canvasGO.transform,
             name: "SettingsButton",
-            anchoredPos: new Vector2(0, -230),  // 这两个数你自己微调
-            size: new Vector2(420, 120),
-            onClick: () => OnClickSettings()
+            sprite: settingsSprite,
+            anchoredPos: settingsAnchoredPos,
+            size: buttonSize,
+            onClick: () => LoadSceneSafe(settingsSceneName)
         );
-        settingsBtn.transform.SetParent(canvasGO.transform, false);
     }
 
-    void OnClickSettings()
+    private void CreateSpriteButton(Transform parent, string name, Sprite sprite, Vector2 anchoredPos, Vector2 size, UnityEngine.Events.UnityAction onClick)
     {
-        // 1) 如果你有独立 SettingsScene，就切场景
-        if (!string.IsNullOrEmpty(settingsSceneName))
-        {
-            LoadSceneSafe(settingsSceneName);
-            return;
-        }
+        var btnObj = new GameObject(name);
+        btnObj.transform.SetParent(parent, false);
 
-        // 2) 还没做 SettingsScene 的话，先打个 log，等你以后再接设置面板
-        Debug.Log("Settings clicked (no SettingsSceneName set).");
-    }
-
-    Button CreateTransparentButton(string name, Vector2 anchoredPos, Vector2 size, UnityEngine.Events.UnityAction onClick)
-    {
-        GameObject btnObj = new GameObject(name);
         var img = btnObj.AddComponent<Image>();
-        img.color = new Color(1, 1, 1, 0); // 完全透明
+        img.sprite = sprite;
+        img.preserveAspect = true;
 
         var btn = btnObj.AddComponent<Button>();
+        btn.onClick.AddListener(onClick);
 
         var rt = btnObj.GetComponent<RectTransform>();
         rt.sizeDelta = size;
         rt.anchorMin = new Vector2(0.5f, 0.5f);
         rt.anchorMax = new Vector2(0.5f, 0.5f);
         rt.anchoredPosition = anchoredPos;
-
-        btn.onClick.AddListener(onClick);
-        return btn;
     }
 
-    void LoadSceneSafe(string sceneName)
+    private void LoadSceneSafe(string sceneName)
     {
         if (string.IsNullOrEmpty(sceneName))
         {
