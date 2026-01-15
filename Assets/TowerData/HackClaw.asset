@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: HackClaw
   m_EditorClassIdentifier: Assembly-CSharp::TowerData
   towerName: HackClaw
-  icon: {fileID: 8917771735433350722, guid: 2a91e32839c7bec4d8e0108602e5d1a2, type: 3}
+  icon: {fileID: 7884744377821139639, guid: 6c7c64a227e8e864f974c49deb0a2bd7, type: 3}
   towerPrefab: {fileID: 4391554628350508584, guid: df90b90c84be60548892152311e540a0, type: 3}
   price: 75
   damage: 6

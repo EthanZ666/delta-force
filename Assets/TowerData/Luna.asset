@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Luna
   m_EditorClassIdentifier: Assembly-CSharp::TowerData
   towerName: Luna
-  icon: {fileID: 4125636645744980110, guid: 0deec736da2959c4bad10e3908552c02, type: 3}
+  icon: {fileID: 7024394194364677811, guid: b7e3edd6ebed03d43bae2cfed7493661, type: 3}
   towerPrefab: {fileID: 2360239949385669434, guid: e0647e0dc2de4af4abe47b8bc1443db1, type: 3}
   price: 90
   damage: 8
