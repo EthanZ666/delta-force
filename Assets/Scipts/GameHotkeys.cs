@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System;
+using UnityEngine.InputSystem;
+
 
 public static class GameHotkeys
 {
@@ -147,17 +149,20 @@ public static class GameHotkeys
             float v = AudioListener.volume;
             bool changed = false;
 
-            if (Input.GetKeyDown(KeyCode.Equals) || Input.GetKeyDown(KeyCode.KeypadPlus))
-            {
-                v += 0.05f;
-                changed = true;
-            }
+            if (Keyboard.current.equalsKey.wasPressedThisFrame ||
+    Keyboard.current.numpadPlusKey.wasPressedThisFrame)
+{
+    v += 0.05f;
+    changed = true;
+}
 
-            if (Input.GetKeyDown(KeyCode.Minus) || Input.GetKeyDown(KeyCode.KeypadMinus))
-            {
-                v -= 0.05f;
-                changed = true;
-            }
+if (Keyboard.current.minusKey.wasPressedThisFrame ||
+    Keyboard.current.numpadMinusKey.wasPressedThisFrame)
+{
+    v -= 0.05f;
+    changed = true;
+}
+
 
             if (!changed) return;
 
