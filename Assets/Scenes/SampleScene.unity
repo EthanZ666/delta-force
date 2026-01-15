@@ -822,21 +822,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bef47f83762f8a4479d2ba2709aa2c26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MapSelector
-  mode: 0
-  gameplaySceneName: SampleScene
+  mode: 1
   mapSelectSceneName: MapSelectScene
+  gameplaySceneName: SampleScene
   mapIds:
   - Daba
   - Zongcai
   mapPreviewPaths:
   - Images/Daba
   - Images/Zongcai
+  selectedMapKey: selected_map_id
   fallbackMapId: Daba
-  buttonSize: {x: 520, y: 340}
-  spacing: 650
   mapRoots:
   - {fileID: 1169411422}
   - {fileID: 682729377}
+  buttonSize: {x: 520, y: 340}
+  spacing: 650
 --- !u!1 &1976848885
 GameObject:
   m_ObjectHideFlags: 0
