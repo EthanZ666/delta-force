@@ -1,153 +1,221 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class MapSelector : MonoBehaviour
 {
-    public enum Mode
+    public enum ModeType
     {
         MapSelectUI,
         ApplyInGameplay
     }
 
-    public Mode mode = Mode.MapSelectUI;
+    [Header("Mode")]
+    public ModeType mode = ModeType.MapSelectUI;
 
+    [Header("Scene")]
     public string gameplaySceneName = "SampleScene";
+    public string mapSelectSceneName = "MapSelectScene";
 
-    public string[] mapIds = { "Daba", "Zongcai" };
-    public string[] mapPreviewPaths = { "Images/Daba", "Images/Zongcai" };
+    [Header("Maps")]
+    public List<string> mapIds = new List<string> { "Daba", "Zongcai" };
+    public List<string> mapPreviewPaths = new List<string> { "Images/Daba", "Images/Zongcai" };
+    public string fallbackMapId = "Daba";
 
+    [Header("UI Layout")]
     public Vector2 buttonSize = new Vector2(520, 340);
     public float spacing = 650f;
 
-    public string fallbackMapId = "Daba";
-    public GameObject[] mapRoots;
+    [Header("Gameplay Map Roots (only for ApplyInGameplay)")]
+    public List<GameObject> mapRoots = new List<GameObject>();
 
-    public static string PrefKey => "selected_map_id";
+    private const string PREF_SELECTED_MAP = "selected_map_id";
 
-    private void Start()
+    private Canvas _canvas;
+    private GameObject _uiRoot;
+
+    private void Awake()
     {
-        if (mode == Mode.MapSelectUI)
+        SceneManager.sceneLoaded += OnSceneLoaded;
+
+        if (mode == ModeType.MapSelectUI)
         {
-            CreateUI();
+            if (!IsCurrentScene(mapSelectSceneName))
+            {
+                Destroy(gameObject);
+                return;
+            }
         }
-        else
+
+        if (mode == ModeType.ApplyInGameplay)
         {
-            ApplyMap();
+            ApplySelectedMapToRoots();
         }
     }
 
-    private void CreateUI()
+    private void Start()
     {
-        if (mapIds == null || mapPreviewPaths == null || mapIds.Length == 0 || mapIds.Length != mapPreviewPaths.Length)
+        if (mode == ModeType.MapSelectUI)
         {
-            Debug.LogError("MapSelector: mapIds and mapPreviewPaths must exist and have the same length.");
+            BuildUI();
+        }
+    }
+
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode loadMode)
+    {
+        if (mode != ModeType.MapSelectUI) return;
+
+        if (!IsCurrentScene(mapSelectSceneName))
+        {
+            DestroyGeneratedUI();
+            Destroy(gameObject);
+        }
+    }
+
+    private bool IsCurrentScene(string sceneName)
+    {
+        return string.Equals(SceneManager.GetActiveScene().name, sceneName, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private string GetSelectedMapId()
+    {
+        var id = PlayerPrefs.GetString(PREF_SELECTED_MAP, fallbackMapId);
+        if (string.IsNullOrWhiteSpace(id)) id = fallbackMapId;
+        return id;
+    }
+
+    private void SetSelectedMapId(string id)
+    {
+        PlayerPrefs.SetString(PREF_SELECTED_MAP, id);
+        PlayerPrefs.Save();
+    }
+
+    private void BuildUI()
+    {
+        if (mapIds == null || mapPreviewPaths == null || mapIds.Count == 0)
+        {
+            Debug.LogWarning("MapSelector: mapIds is empty.");
             return;
         }
 
-        var canvasGO = new GameObject("MapSelectCanvas");
-        var canvas = canvasGO.AddComponent<Canvas>();
-        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        if (mapPreviewPaths.Count != mapIds.Count)
+        {
+            Debug.LogWarning($"MapSelector: mapPreviewPaths.Count ({mapPreviewPaths.Count}) should match mapIds.Count ({mapIds.Count}).");
+        }
+
+        DestroyGeneratedUI();
+
+        _uiRoot = new GameObject("__MapSelectorUIRoot");
+        _uiRoot.transform.SetParent(transform, false);
+
+        var canvasGO = new GameObject("__MapSelectorCanvas");
+        canvasGO.transform.SetParent(_uiRoot.transform, false);
+
+        _canvas = canvasGO.AddComponent<Canvas>();
+        _canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvasGO.AddComponent<GraphicRaycaster>();
 
         var scaler = canvasGO.AddComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = new Vector2(1920, 1080);
 
-        canvasGO.AddComponent<GraphicRaycaster>();
-
-        EnsureEventSystem();
-
-        float startX = -spacing * (mapIds.Length - 1) / 2f;
-
-        for (int i = 0; i < mapIds.Length; i++)
+        for (int i = 0; i < mapIds.Count; i++)
         {
             string id = mapIds[i];
-            string path = mapPreviewPaths[i];
+            string previewPath = (i < mapPreviewPaths.Count) ? mapPreviewPaths[i] : "";
 
-            Sprite sprite = Resources.Load<Sprite>(path);
-            if (sprite == null)
+            var btnGO = new GameObject($"MapBtn_{id}");
+            btnGO.transform.SetParent(canvasGO.transform, false);
+
+            var rect = btnGO.AddComponent<RectTransform>();
+            rect.sizeDelta = buttonSize;
+            rect.anchorMin = new Vector2(0.5f, 0.5f);
+            rect.anchorMax = new Vector2(0.5f, 0.5f);
+
+            float x = (i == 0) ? -spacing * 0.5f : spacing * 0.5f;
+            rect.anchoredPosition = new Vector2(x, 0);
+
+            var img = btnGO.AddComponent<Image>();
+            img.raycastTarget = true;
+
+            Sprite spr = null;
+            if (!string.IsNullOrWhiteSpace(previewPath))
             {
-                Debug.LogError($"MapSelector: Missing preview at Resources/{path}.png");
-                continue;
+                spr = Resources.Load<Sprite>(previewPath);
             }
 
-            var go = new GameObject($"Map_{id}");
-            go.transform.SetParent(canvasGO.transform, false);
+            if (spr == null)
+            {
+                spr = Resources.Load<Sprite>($"Images/{id}");
+            }
 
-            var img = go.AddComponent<Image>();
-            img.sprite = sprite;
-            img.preserveAspect = true;
+            if (spr == null)
+            {
+                Debug.LogWarning($"MapSelector: Cannot load preview sprite for '{id}'. Path tried: '{previewPath}' and 'Images/{id}'.");
+            }
+            else
+            {
+                img.sprite = spr;
+                img.preserveAspect = true;
+            }
 
-            var btn = go.AddComponent<Button>();
-            btn.onClick.AddListener(() => SelectMapAndPlay(id));
-
-            var rt = go.GetComponent<RectTransform>();
-            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
-            rt.anchoredPosition = new Vector2(startX + i * spacing, 0);
-            rt.sizeDelta = buttonSize;
+            var button = btnGO.AddComponent<Button>();
+            int capturedIndex = i;
+            button.onClick.AddListener(() =>
+            {
+                OnClickMap(mapIds[capturedIndex]);
+            });
         }
     }
 
-    private void SelectMapAndPlay(string mapId)
+    private void OnClickMap(string mapId)
     {
-        if (string.IsNullOrEmpty(mapId))
-        {
-            Debug.LogError("MapSelector: mapId is empty.");
-            return;
-        }
-
-        PlayerPrefs.SetString(PrefKey, mapId);
-        PlayerPrefs.Save();
-
-        Time.timeScale = 1f;
-
-        if (!Application.CanStreamedLevelBeLoaded(gameplaySceneName))
-        {
-            Debug.LogError($"MapSelector: Cannot load '{gameplaySceneName}'. Add it to Build Settings.");
-            return;
-        }
-
+        SetSelectedMapId(mapId);
         SceneManager.LoadScene(gameplaySceneName);
     }
 
-    private void ApplyMap()
+    private void DestroyGeneratedUI()
     {
-        if (mapRoots == null || mapRoots.Length == 0)
+        if (_uiRoot != null)
         {
-            Debug.LogError("MapSelector: mapRoots is empty (Assign your map parent objects in SampleScene).");
-            return;
-        }
-
-        string selected = PlayerPrefs.GetString(PrefKey, fallbackMapId);
-
-        for (int i = 0; i < mapRoots.Length; i++)
-        {
-            if (mapRoots[i] != null) mapRoots[i].SetActive(false);
-        }
-
-        int chosen = 0;
-        for (int i = 0; i < mapIds.Length; i++)
-        {
-            if (mapIds[i] == selected)
-            {
-                chosen = i;
-                break;
-            }
-        }
-
-        if (chosen >= 0 && chosen < mapRoots.Length && mapRoots[chosen] != null)
-        {
-            mapRoots[chosen].SetActive(true);
+            Destroy(_uiRoot);
+            _uiRoot = null;
+            _canvas = null;
         }
     }
 
-    private void EnsureEventSystem()
+    private void ApplySelectedMapToRoots()
     {
-        var es = FindAnyObjectByType<UnityEngine.EventSystems.EventSystem>();
-        if (es != null) return;
+        if (mapRoots == null || mapRoots.Count == 0)
+        {
+            return;
+        }
 
-        var esGO = new GameObject("EventSystem");
-        esGO.AddComponent<UnityEngine.EventSystems.EventSystem>();
-        esGO.AddComponent<UnityEngine.EventSystems.StandaloneInputModule>();
+        var selected = GetSelectedMapId();
+
+        for (int i = 0; i < mapRoots.Count; i++)
+        {
+            if (mapRoots[i] != null)
+                mapRoots[i].SetActive(false);
+        }
+
+        int idx = mapIds != null ? mapIds.IndexOf(selected) : -1;
+
+        if (idx < 0 || idx >= mapRoots.Count || mapRoots[idx] == null)
+        {
+            idx = mapIds != null ? mapIds.IndexOf(fallbackMapId) : -1;
+        }
+
+        if (idx >= 0 && idx < mapRoots.Count && mapRoots[idx] != null)
+        {
+            mapRoots[idx].SetActive(true);
+        }
     }
 }
