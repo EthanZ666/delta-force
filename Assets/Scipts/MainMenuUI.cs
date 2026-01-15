@@ -2,6 +2,14 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+
+// if (FindObjectOfType<UnityEngine.EventSystems.EventSystem>() == null)
+//     {
+//         var uiEventSystem = new GameObject("EventSystem");
+//         uiEventSystem.AddComponent<UnityEngine.EventSystems.EventSystem>();
+//         uiEventSystem.AddComponent<UnityEngine.EventSystems.StandaloneInputModule>();
+//     }
+
 public class MainMenuOverlayUI : MonoBehaviour
 {
     [Header("Resources paths (no extension)")]
