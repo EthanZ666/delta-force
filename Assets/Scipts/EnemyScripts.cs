@@ -6,10 +6,13 @@ public abstract class EnemyBase : MonoBehaviour
     [Header("Core Stats")]
     [SerializeField] private float maxHealth = 100f;
 
-    [Header("Enemy Damage")]
+    [Header("Enemy Combat")]
     [SerializeField] protected float damage = 10f;
-
     public virtual float Damage => damage;
+
+    [Header("Enemy Movement")]
+    [SerializeField] protected float speed = 2.5f;
+    public virtual float Speed => speed;
 
     [Header("Targeting")]
     public virtual bool IsCamouflaged => false;
