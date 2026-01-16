@@ -28,6 +28,7 @@ public class TowerShop : MonoBehaviour
         RenderShop();
     }
     float CalculateEfficiency(TowerData tower)
+    // Calculate the efficiency of money for tower as the damage and range in return
     {
         float efficiency = (tower.damage*10 + tower.range*5 )/ tower.price;
         return efficiency;

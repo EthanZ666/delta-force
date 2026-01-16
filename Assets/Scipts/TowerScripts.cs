@@ -55,13 +55,25 @@ public abstract class Tower : MonoBehaviour
             p.SetTarget(target);
         }
     }
+    float CalculateDangerValue(EnemyBase enemy, float distance)
+{
+    float Dangervalue =
+        enemy.Damage * 2.3f +
+        // higher damage -> higher value
+        enemy.Speed * 3f + 
+        // Faster ones gets higher value
+        (range - distance); // closer enemies get higher value
+
+    return Dangervalue;
+}
+
 
     protected void FindTarget()
     {
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
 
-        float shortestDistance = Mathf.Infinity;
-        Transform nearestEnemy = null;
+        float MaxDangerValue = Mathf.Infinity;
+        Transform targetEnemy = null;
 
         foreach (GameObject enemyObj in enemies)
         {
@@ -71,13 +83,14 @@ public abstract class Tower : MonoBehaviour
             if (enemy == null || enemy.IsDead) continue;
 
             float distance = Vector2.Distance(transform.position, enemyObj.transform.position);
-            if (distance <= range && distance < shortestDistance)
+            float dangervalue = CalculateDangerValue(enemy, distance);
+            if (distance <= range && dangervalue > MaxDangerValue)
             {
-                shortestDistance = distance;
-                nearestEnemy = enemyObj.transform;
+                MaxDangerValue = dangervalue;
+                targetEnemy = enemyObj.transform;
             }
         }
 
-        target = nearestEnemy;
+        target = targetEnemy;
     }
 }
