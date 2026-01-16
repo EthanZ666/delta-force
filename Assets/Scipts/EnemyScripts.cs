@@ -21,6 +21,10 @@ public abstract class EnemyBase : MonoBehaviour
     public float CurrentHealth { get; private set; }
     public bool IsDead { get; private set; }
 
+    public float DangerScore01  => DangerLevelCalculator.Score01(Damage, Speed, DangerLevelCalculator.Tuning.Default);
+    public float DangerScore100 => DangerLevelCalculator.Score100(Damage, Speed, DangerLevelCalculator.Tuning.Default);
+    public int DangerLevel      => DangerLevelCalculator.Level(Damage, Speed, DangerLevelCalculator.Tuning.Default);
+
     public event Action<EnemyBase> Died;
 
     protected virtual void Awake()
