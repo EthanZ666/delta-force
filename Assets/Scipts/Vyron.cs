@@ -20,7 +20,7 @@ public class Vyron : Tower
         float actualDamage = damage;
 
         // 10% chance to land a critical hit - 10 * the damage
-        int DiceNumber = Random.Range(0,11);
+        int DiceNumber = Random.Range(1,11);
         if (DiceNumber == 10)
             actualDamage = damage*10;
 
