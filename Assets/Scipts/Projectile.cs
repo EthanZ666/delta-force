@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class Projectile : MonoBehaviour
@@ -11,12 +12,18 @@ public class Projectile : MonoBehaviour
 
     public void SetTarget(Transform newTarget)
     {
-        target = newTarget;
+        if (newTarget != null)
+            target = newTarget;
+        else
+            throw new Exception("No target is passed in");
     }
 
     public void SetDamage(float value)
     {
-        damage = value;
+        if (value >= 0)
+            damage = value;
+        else
+            throw new Exception("Damage less then 0");
     }
 
     void Update()
