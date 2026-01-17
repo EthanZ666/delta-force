@@ -1,6 +1,53 @@
 // using UnityEngine;
 
-// public void MusicBubbleSort()
+// public class Song
+// {
+//     public string name;
+//     public string genre;
+//     public int duration;
+// }
+
+// public class Program
+// {
+//     static List<Song> songNames = new List<Song>();
+
+//     static void Main()
+//     {
+//         // Sample songs
+//         Song luna = new Song();
+//         luna.name = "Luna";
+//         luna.genre = "Ethereal";
+//         luna.duration = 206;
+
+//         Song gotYou = new Song();
+//         gotYou.name = "Got You";
+//         gotYou.genre = "Electronic";
+//         gotYou.duration = 204;
+
+//         Song dianYuZhang = new Song();
+//         dianYuZhang.name = "Dian Yu Zhang";
+//         dianYuZhang.genre = "Dramatic";
+//         dianYuZhang.duration = 138;
+
+//         Song dawn = new Song();
+//         dawn.name = "Dawn";
+//         dawn.genre = "Rock";
+//         dawn.duration = 236;
+
+//         Song backgroundMusic = new Song();
+//         backgroundMusic.name = "Background Music";
+//         backgroundMusic.genre = "Rock";
+//         backgroundMusic.duration = 176;
+
+//         songNames.Add(luna);
+//         songNames.Add(gotYou);
+//         songNames.Add(dianYuZhang);
+//         songNames.Add(dawn);
+//         songNames.Add(backgroundMusic);
+
+
+
+// // public void MusicBubbleSort()
 // {
 //     int n = songs.Length;
 
