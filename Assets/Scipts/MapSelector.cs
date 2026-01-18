@@ -21,35 +21,42 @@ public class MapSelector : MonoBehaviour
     public ModeType mode = ModeType.MapSelectUI;
 
     [Header("Scene Names")]
-    [Tooltip("Only used when mode = MapSelectUI. The scene name that shows the map selection UI.")]
     public string mapSelectSceneName = "MapSelectScene";
-
-    [Tooltip("Only used when mode = MapSelectUI. The scene name to load after selecting a map.")]
     public string gameplaySceneName = "SampleScene";
 
-    [Header("Map IDs (must match Map Roots order)")]
+    [Header("Map IDs (order matters)")]
     public List<string> mapIds = new List<string> { "Daba", "Zongcai" };
 
-    [Header("Preview Sprites (Resources paths, no extension, same order as mapIds)")]
-    public List<string> mapPreviewPaths = new List<string> { "Images/Daba", "Images/Zongcai" };
+    [Header("Preview Sprites (Resources paths, no extension)")]
+    public List<string> mapPreviewPaths = new List<string>
+    {
+        "Images/Daba",
+        "Images/Zongcai"
+    };
 
-    [Header("PlayerPrefs Key")]
+    [Header("PlayerPrefs")]
     public string selectedMapKey = "selected_map_id";
-
-    [Header("Fallback Map ID (if prefs missing or invalid)")]
     public string fallbackMapId = "Daba";
 
-    [Header("Gameplay Map Roots (only used when mode = ApplyInGameplay)")]
-    [Tooltip("In SampleScene, drag in your map root GameObjects here in the same order as mapIds (e.g., Daba-map, Zongcai-map).")]
+    [Header("Gameplay Map Roots (ApplyInGameplay only)")]
     public List<GameObject> mapRoots = new List<GameObject>();
 
-    [Header("UI Layout (MapSelectUI)")]
+    // ============================
+    // UI layout (MapSelectUI)
+    // ============================
+    [Header("UI Target Area")]
+    public RectTransform targetArea;
+    public string autoFindTargetAreaName = "ScenarioSlots";
+
     public Vector2 buttonSize = new Vector2(520, 320);
-    public float spacing = 650f;
+    public float spacing = 80f;
 
     private GameObject _generatedCanvas;
 
-    void Awake()
+    // ============================
+    // Unity lifecycle
+    // ============================
+    private void Awake()
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
 
@@ -70,29 +77,18 @@ public class MapSelector : MonoBehaviour
 
     private void Start()
     {
-        if (mode == ModeType.MapSelectUI)
+        if (mode != ModeType.MapSelectUI) return;
+
+        EnsureEventSystem();
+
+        if (targetArea == null && !string.IsNullOrWhiteSpace(autoFindTargetAreaName))
         {
-            // ✅ Key fix: ensure we have a working EventSystem for UI clicks
-            EnsureEventSystem();
-            BuildUI();
+            var go = GameObject.Find(autoFindTargetAreaName);
+            if (go != null)
+                targetArea = go.GetComponent<RectTransform>();
         }
-    }
 
-    private void EnsureEventSystem()
-    {
-        // If another scene/manager already made one, do nothing.
-        if (EventSystem.current != null) return;
-
-        var esGO = new GameObject("EventSystem");
-        esGO.AddComponent<EventSystem>();
-
-#if ENABLE_INPUT_SYSTEM
-        // New Input System: required for UI clicks when InputManager is disabled
-        esGO.AddComponent<InputSystemUIInputModule>();
-#else
-        // Old Input System fallback
-        esGO.AddComponent<StandaloneInputModule>();
-#endif
+        BuildUI();
     }
 
     private void OnDestroy()
@@ -100,10 +96,8 @@ public class MapSelector : MonoBehaviour
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
-    private void OnSceneLoaded(Scene scene, LoadSceneMode loadMode)
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (mode != ModeType.MapSelectUI) return;
-
         if (!IsCurrentScene(mapSelectSceneName))
         {
             DestroyGeneratedUI();
@@ -111,16 +105,20 @@ public class MapSelector : MonoBehaviour
         }
     }
 
-    private bool IsCurrentScene(string sceneName)
-    {
-        return SceneManager.GetActiveScene().name.Equals(sceneName, StringComparison.OrdinalIgnoreCase);
-    }
-
+    // ============================
+    // Core UI logic
+    // ============================
     private void BuildUI()
     {
         DestroyGeneratedUI();
 
-        // Canvas
+        if (targetArea != null)
+        {
+            BuildButtonsUnderTargetArea(targetArea);
+            return;
+        }
+
+        // fallback canvas（不推荐）
         _generatedCanvas = new GameObject("MapSelectCanvas");
         var canvas = _generatedCanvas.AddComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
@@ -131,81 +129,86 @@ public class MapSelector : MonoBehaviour
 
         _generatedCanvas.AddComponent<GraphicRaycaster>();
 
+        BuildButtonsUnderTargetArea(_generatedCanvas.GetComponent<RectTransform>());
+    }
+
+    private void BuildButtonsUnderTargetArea(RectTransform parent)
+    {
+        // 1️⃣ 清理旧按钮
+        for (int i = parent.childCount - 1; i >= 0; i--)
+        {
+            var c = parent.GetChild(i);
+            if (c.name.StartsWith("MapBtn_", StringComparison.OrdinalIgnoreCase))
+            {
+                Destroy(c.gameObject);
+            }
+        }
+
+        // 2️⃣ 确保 HorizontalLayoutGroup
+        var hlg = parent.GetComponent<HorizontalLayoutGroup>();
+        if (hlg == null)
+            hlg = parent.gameObject.AddComponent<HorizontalLayoutGroup>();
+
+        hlg.childAlignment = TextAnchor.MiddleCenter;
+        hlg.childControlWidth = true;
+        hlg.childControlHeight = true;
+        hlg.childForceExpandWidth = false;
+        hlg.childForceExpandHeight = false;
+        hlg.spacing = spacing;
+
+        // 3️⃣ 强制 ScenarioSlots 尺寸（防止丢图）
+        int count = Mathf.Max(1, mapIds.Count);
+        float width = count * buttonSize.x + (count - 1) * spacing;
+        float height = buttonSize.y;
+
+        parent.anchorMin = parent.anchorMax = new Vector2(0.5f, 0.5f);
+        parent.pivot = new Vector2(0.5f, 0.5f);
+        parent.sizeDelta = new Vector2(width, height);
+
+        // 4️⃣ 生成按钮
         for (int i = 0; i < mapIds.Count; i++)
         {
             string id = mapIds[i];
-            string previewPath = (i < mapPreviewPaths.Count) ? mapPreviewPaths[i] : "";
+            string path = i < mapPreviewPaths.Count ? mapPreviewPaths[i] : "";
 
             var btnGO = new GameObject($"MapBtn_{id}");
-            btnGO.transform.SetParent(_generatedCanvas.transform, false);
+            btnGO.transform.SetParent(parent, false);
 
             var rect = btnGO.AddComponent<RectTransform>();
             rect.sizeDelta = buttonSize;
-            rect.anchorMin = new Vector2(0.5f, 0.5f);
-            rect.anchorMax = new Vector2(0.5f, 0.5f);
-            rect.pivot = new Vector2(0.5f, 0.5f);
 
-            float x = (i == 0) ? -spacing * 0.5f : spacing * 0.5f;
-            rect.anchoredPosition = new Vector2(x, 0);
+            var le = btnGO.AddComponent<LayoutElement>();
+            le.preferredWidth = buttonSize.x;
+            le.preferredHeight = buttonSize.y;
+            le.minWidth = buttonSize.x;
+            le.minHeight = buttonSize.y;
 
             var img = btnGO.AddComponent<Image>();
-            img.raycastTarget = true;
+            img.preserveAspect = true;
 
-            Sprite spr = null;
-            if (!string.IsNullOrWhiteSpace(previewPath))
-            {
-                spr = Resources.Load<Sprite>(previewPath);
-            }
-
-            if (spr == null)
-            {
-                Debug.LogWarning($"Map preview sprite not found at Resources/{previewPath}.png (id={id}).");
-            }
+            Sprite sprite = Resources.Load<Sprite>(path);
+            if (sprite != null)
+                img.sprite = sprite;
             else
-            {
-                img.sprite = spr;
-                img.preserveAspect = true;
-            }
+                Debug.LogWarning($"[MapSelector] Missing sprite: Resources/{path}.png");
 
             var btn = btnGO.AddComponent<Button>();
             btn.transition = Selectable.Transition.None;
-
-            btn.onClick.AddListener(() =>
-            {
-                SelectMapAndLoad(id);
-            });
+            btn.onClick.AddListener(() => SelectMapAndLoad(id));
         }
     }
 
-    private void DestroyGeneratedUI()
-    {
-        if (_generatedCanvas != null)
-        {
-            Destroy(_generatedCanvas);
-            _generatedCanvas = null;
-        }
-    }
-
+    // ============================
+    // Map select / apply
+    // ============================
     private void SelectMapAndLoad(string mapId)
     {
-        if (string.IsNullOrWhiteSpace(mapId))
-        {
-            Debug.LogError("SelectMapAndLoad: mapId is empty.");
-            return;
-        }
-
         PlayerPrefs.SetString(selectedMapKey, mapId);
         PlayerPrefs.Save();
 
-        if (string.IsNullOrWhiteSpace(gameplaySceneName))
-        {
-            Debug.LogError("Gameplay scene name is empty.");
-            return;
-        }
-
         if (!Application.CanStreamedLevelBeLoaded(gameplaySceneName))
         {
-            Debug.LogError($"Cannot load scene '{gameplaySceneName}'. Add it to Build Settings.");
+            Debug.LogError($"Scene not in Build Settings: {gameplaySceneName}");
             return;
         }
 
@@ -214,26 +217,47 @@ public class MapSelector : MonoBehaviour
 
     private void ApplySelectedMapToRoots()
     {
-        // disable all first
-        if (mapRoots != null)
-        {
-            for (int i = 0; i < mapRoots.Count; i++)
-            {
-                if (mapRoots[i] != null) mapRoots[i].SetActive(false);
-            }
-        }
+        foreach (var root in mapRoots)
+            if (root != null)
+                root.SetActive(false);
 
         string selected = PlayerPrefs.GetString(selectedMapKey, fallbackMapId);
-        int idx = mapIds != null ? mapIds.IndexOf(selected) : -1;
+        int index = mapIds.IndexOf(selected);
+        if (index < 0 || index >= mapRoots.Count)
+            index = mapIds.IndexOf(fallbackMapId);
 
-        if (idx < 0 || idx >= mapRoots.Count || mapRoots[idx] == null)
-        {
-            idx = mapIds != null ? mapIds.IndexOf(fallbackMapId) : -1;
-        }
+        if (index >= 0 && index < mapRoots.Count && mapRoots[index] != null)
+            mapRoots[index].SetActive(true);
+    }
 
-        if (idx >= 0 && idx < mapRoots.Count && mapRoots[idx] != null)
+    // ============================
+    // Utils
+    // ============================
+    private bool IsCurrentScene(string name)
+    {
+        return SceneManager.GetActiveScene().name.Equals(name, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private void EnsureEventSystem()
+    {
+        if (EventSystem.current != null) return;
+
+        var es = new GameObject("EventSystem");
+        es.AddComponent<EventSystem>();
+
+#if ENABLE_INPUT_SYSTEM
+        es.AddComponent<InputSystemUIInputModule>();
+#else
+        es.AddComponent<StandaloneInputModule>();
+#endif
+    }
+
+    private void DestroyGeneratedUI()
+    {
+        if (_generatedCanvas != null)
         {
-            mapRoots[idx].SetActive(true);
+            Destroy(_generatedCanvas);
+            _generatedCanvas = null;
         }
     }
 }
