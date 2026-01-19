@@ -345,7 +345,11 @@ MonoBehaviour:
   targetArea: {fileID: 489183576}
   autoFindTargetAreaName: ScenarioSlots
   buttonSize: {x: 360, y: 100}
-  spacing: 5
+  spacing: 20
+  forceTargetAreaRect: 1
+  targetAreaSize: {x: 0, y: 0}
+  targetAreaAnchoredPos: {x: 0, y: 40}
+  addMaskToButtons: 1
 --- !u!4 &203383848
 Transform:
   m_ObjectHideFlags: 0
