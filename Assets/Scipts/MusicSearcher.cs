@@ -1,32 +1,47 @@
 // using UnityEngine;
 
-// void Start()
+// public class SongSearch
 // {
-//     Array.Sort(songs, (a, b) =>
-//         string.Compare(a.name, b.name, StringComparison.OrdinalIgnoreCase));
-// }
-
-// public AudioClip BinarySearch(string searchName)
-// {
-//     int left = 0;
-//     int right = songs.Length - 1;
-
-//     searchName = searchName.ToLower();
-
-//     while (left <= right)
+//     public static List<string> GetSongNamesList(List<Song> songNames)
 //     {
-//         int mid = (left + right) / 2;
-//         string midName = songs[mid].name.ToLower();
-
-//         int comparison = string.Compare(midName, searchName);
-
-//         if (comparison == 0)
-//             return songs[mid]; 
-//         else if (comparison < 0)
-//             left = mid + 1;
-//         else
-//             right = mid - 1;
+//         List<string> songNamesList = new List<string>();
+//         foreach (Song song in songNames)
+//         {
+//             songNamesList.Add(song.name);
+//         }
+      
+//         songNamesList.Sort(StringComparer.OrdinalIgnoreCase);
+      
+//         return songNamesList;
 //     }
 
-//     return null; 
+
+//     public static int BinarySearch(List<string> sortedList, string keyword)
+//     {
+//         int left = 0;
+//         int right = sortedList.Count - 1;
+
+//         while (left <= right)
+//         {
+//             int mid = left + (right - left) / 2;
+
+
+//             int comparison = string.Compare(sortedList[mid], keyword, StringComparison.OrdinalIgnoreCase);
+
+//             if (comparison == 0)
+//             {
+//                 return mid;
+//             }
+//             else if (comparison < 0)
+//             {
+//                 left = mid + 1; 
+//             }
+//             else
+//             {
+//                 right = mid - 1; 
+//             }
+//         }
+
+//         return -1; 
+//     }
 // }
