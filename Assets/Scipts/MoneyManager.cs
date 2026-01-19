@@ -43,4 +43,10 @@ public sealed class MoneyManager : MonoBehaviour
 
         BalanceChanged?.Invoke(balance);
     }
+    public void SetBalance(int amount)
+{
+    balance = Mathf.Max(200, amount);
+    BalanceChanged?.Invoke(balance);
+}
+
 }
