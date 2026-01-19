@@ -14,9 +14,6 @@ public abstract class EnemyBase : MonoBehaviour
     [SerializeField] protected float speed = 2.5f;
     public virtual float Speed => speed;
 
-    [Header("Targeting")]
-    public virtual bool IsCamouflaged => false;
-
     public float MaxHealth => maxHealth;
     public float CurrentHealth { get; private set; }
     public bool IsDead { get; private set; }
@@ -77,10 +74,5 @@ public abstract class EnemyBase : MonoBehaviour
 
         Died?.Invoke(this);
         Destroy(gameObject);
-    }
-
-    public bool IsTargetableByTower(bool towerHasCamoDetection)
-    {
-        return !IsCamouflaged || towerHasCamoDetection;
     }
 }
