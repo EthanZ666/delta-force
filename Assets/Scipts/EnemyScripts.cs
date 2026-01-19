@@ -74,7 +74,7 @@ public abstract class EnemyBase : MonoBehaviour
 
         Died?.Invoke(this);
         Destroy(gameObject);
-        EnemyStats.totalEnemiesKilled ++;
+        GameStats.totalEnemiesKilled ++;
         SaveManager.SaveGame();
 
     }

@@ -16,7 +16,7 @@ public static class SaveManager
         if (money != null)
             data.money = money.Balance;
 
-        data.totalEnemiesKilled = EnemyStats.totalEnemiesKilled;
+        data.totalEnemiesKilled = GameStats.totalEnemiesKilled;
         // data.musicOn = AudioSettings.musicOn;
         // data.volume = AudioSettings.volume;
 
@@ -43,7 +43,7 @@ public static class SaveManager
         if (money != null)
             money.SetBalance(data.money);
 
-        EnemyStats.totalEnemiesKilled = data.totalEnemiesKilled;
+        GameStats.totalEnemiesKilled = data.totalEnemiesKilled;
         // AudioSettings.musicOn = data.musicOn;
         // AudioSettings.volume = data.volume;
 
