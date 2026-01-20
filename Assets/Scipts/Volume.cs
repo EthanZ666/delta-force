@@ -1,101 +1,114 @@
-// using UnityEngine;
-// using UnityEngine.UI;
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
-// public class Volume : MonoBehaviour
-// {
-//     [Header("UI")]
-//     [SerializeField] private Slider masterSlider;
-//     [SerializeField] private Slider musicSlider;
-//     [SerializeField] private Toggle musicToggle;
+public class Volume : MonoBehaviour
+{
+    [Header("UI (TMP)")]
+    [SerializeField] private Slider masterSlider;
+    [SerializeField] private Slider musicSlider;
+    [SerializeField] private Toggle musicToggle;
+    [SerializeField] private TMP_Dropdown musicDropdown;
 
-//     private const string PREF_MASTER = "volume_master";
-//     private const string PREF_MUSIC = "volume_music";
-//     private const string PREF_MUSIC_ON = "music_on";
+    private const string PREF_MASTER = "volume_master";
+    private const string PREF_MUSIC  = "volume_music";
+    private const string PREF_ON     = "music_on";
+    private const string PREF_INDEX  = "music_index";
 
-//     private void Awake()
-//     {
-//         // 绑定回调
-//         if (masterSlider != null) masterSlider.onValueChanged.AddListener(SetMaster);
-//         if (musicSlider != null) musicSlider.onValueChanged.AddListener(SetMusic);
-//         if (musicToggle != null) musicToggle.onValueChanged.AddListener(SetMusicOn);
+    private void Awake()
+    {
+        if (masterSlider) masterSlider.onValueChanged.AddListener(OnMasterChanged);
+        if (musicSlider)  musicSlider.onValueChanged.AddListener(OnMusicChanged);
+        if (musicToggle)  musicToggle.onValueChanged.AddListener(OnMusicToggle);
+        if (musicDropdown) musicDropdown.onValueChanged.AddListener(OnSelectSong);
 
-//         RefreshFromPrefs();
-//         Debug.Log("Volume initialized");
-//     }
+        RefreshUI();
+    }
 
-//     private void OnEnable()
-//     {
-//         // 每次进入 SettingsScene / 打开面板都刷新一次
-//         RefreshFromPrefs();
+    private void OnEnable()
+    {
+        RefreshUI();
+        GameHotkeys.SettingsChanged += RefreshUI;
+    }
 
-//         // Bug5：Hotkeys 改了音量，UI 跟着刷新
-//         GameHotkeys.SettingsChanged += RefreshFromPrefs;
-//     }
+    private void OnDisable()
+    {
+        GameHotkeys.SettingsChanged -= RefreshUI;
+    }
 
-//     private void OnDisable()
-//     {
-//         GameHotkeys.SettingsChanged -= RefreshFromPrefs;
-//     }
+    private void RefreshUI()
+    {
+        float master = Mathf.Clamp01(PlayerPrefs.GetFloat(PREF_MASTER, 0.8f));
+        float music  = Mathf.Clamp01(PlayerPrefs.GetFloat(PREF_MUSIC, 0.8f));
+        bool on      = PlayerPrefs.GetInt(PREF_ON, 1) == 1;
+        int index    = PlayerPrefs.GetInt(PREF_INDEX, 0);
 
-//     private void RefreshFromPrefs()
-//     {
-//         float master = Mathf.Clamp01(PlayerPrefs.GetFloat(PREF_MASTER, 0.8f));
-//         float music = Mathf.Clamp01(PlayerPrefs.GetFloat(PREF_MUSIC, 0.8f));
-//         bool on = PlayerPrefs.GetInt(PREF_MUSIC_ON, 1) == 1;
+        if (masterSlider) masterSlider.SetValueWithoutNotify(master);
+        if (musicSlider)  musicSlider.SetValueWithoutNotify(music);
+        if (musicToggle)  musicToggle.SetIsOnWithoutNotify(on);
 
-//         if (masterSlider != null) masterSlider.SetValueWithoutNotify(master);
-//         if (musicSlider != null) musicSlider.SetValueWithoutNotify(music);
-//         if (musicToggle != null) musicToggle.SetIsOnWithoutNotify(on);
+        AudioListener.volume = master;
 
-//         ApplyMaster(master);
-//         ApplyMusic(music);
-//         ApplyMusicOn(on);
-//     }
+        if (MusicPlayer.Instance != null)
+        {
+            MusicPlayer.Instance.SetMusicVolume(music);
+            MusicPlayer.Instance.SetMusicOn(on);
+        }
 
-//     public void SetMaster(float value)
-//     {
-//         value = Mathf.Clamp01(value);
-//         ApplyMaster(value);
-//         PlayerPrefs.SetFloat(PREF_MASTER, value);
-//         PlayerPrefs.Save();
-//     }
+        BuildDropdownOptions();
 
-//     public void SetMusic(float value)
-//     {
-//         value = Mathf.Clamp01(value);
-//         ApplyMusic(value);
-//         PlayerPrefs.SetFloat(PREF_MUSIC, value);
-//         PlayerPrefs.Save();
-//     }
+        if (musicDropdown)
+            musicDropdown.SetValueWithoutNotify(index);
+    }
 
-//     public void SetMusicOn(bool on)
-//     {
-//         ApplyMusicOn(on);
-//         PlayerPrefs.SetInt(PREF_MUSIC_ON, on ? 1 : 0);
-//         PlayerPrefs.Save();
-//     }
+    private void BuildDropdownOptions()
+    {
+        if (!musicDropdown) return;
+        if (MusicPlayer.Instance == null) return;
+        if (MusicPlayer.Instance.SongCount <= 0) return;
 
-//     private void ApplyMaster(float v)
-//     {
-//         AudioListener.volume = Mathf.Clamp01(v);
-//     }
+        musicDropdown.ClearOptions();
 
-//     private void ApplyMusic(float v)
-//     {
-//         var src = GetMusicSource();
-//         if (src != null) src.volume = Mathf.Clamp01(v);
-//     }
+        var options = new System.Collections.Generic.List<string>();
+        for (int i = 0; i < MusicPlayer.Instance.SongCount; i++)
+            options.Add(MusicPlayer.Instance.GetSongName(i));
 
-//     private void ApplyMusicOn(bool on)
-//     {
-//         var src = GetMusicSource();
-//         if (src != null) src.mute = !on;
-//     }
+        musicDropdown.AddOptions(options);
+    }
 
-//     private AudioSource GetMusicSource()
-//     {
-//         // Bug3：不依赖拖引用，直接用 Instance
-//         if (MusicPlayer.Instance == null) return null;
-//         return MusicPlayer.Instance.GetSource();
-//     }
-// }
+    private void OnMasterChanged(float v)
+    {
+        v = Mathf.Clamp01(v);
+        AudioListener.volume = v;
+        PlayerPrefs.SetFloat(PREF_MASTER, v);
+        PlayerPrefs.Save();
+    }
+
+    private void OnMusicChanged(float v)
+    {
+        v = Mathf.Clamp01(v);
+        PlayerPrefs.SetFloat(PREF_MUSIC, v);
+        PlayerPrefs.Save();
+
+        if (MusicPlayer.Instance != null)
+            MusicPlayer.Instance.SetMusicVolume(v);
+    }
+
+    private void OnMusicToggle(bool on)
+    {
+        PlayerPrefs.SetInt(PREF_ON, on ? 1 : 0);
+        PlayerPrefs.Save();
+
+        if (MusicPlayer.Instance != null)
+            MusicPlayer.Instance.SetMusicOn(on);
+    }
+
+    private void OnSelectSong(int index)
+    {
+        PlayerPrefs.SetInt(PREF_INDEX, index);
+        PlayerPrefs.Save();
+
+        if (MusicPlayer.Instance != null)
+            MusicPlayer.Instance.PlayIndex(index);
+    }
+}
