@@ -67,10 +67,12 @@ public class MusicPlayer : MonoBehaviour
 
     public void PlayIndex(int index)
     {
+        // makes sure that the song list and selected song isn't empty and that the index is a valid number
         if (songs == null || songs.Length == 0) return;
         if (index < 0 || index >= songs.Length) return;
         if (songs[index] == null) return;
 
+        // sets the selected song as the current clip
         musicSource.clip = songs[index];
 
         // Only play when music is ON
