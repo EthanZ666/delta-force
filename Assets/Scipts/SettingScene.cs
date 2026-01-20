@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class SettingScene : MonoBehaviour
 {
-    private bool isOff
+    private bool isOff;
 
     void Start()
     {
@@ -37,7 +37,7 @@ public class SettingScene : MonoBehaviour
     {
         AudioListener.volume = value;
         PlayerPrefs.SetFloat("volume", value);
-         if (volume == 0f)
+         if (AudioListener.volume == 0f)
         {
             isOff = true;
         }
