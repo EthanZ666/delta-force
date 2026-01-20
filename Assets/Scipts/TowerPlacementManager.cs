@@ -67,16 +67,16 @@ public class TowerPlacementManager : MonoBehaviour
         }
     }
 
-    public void BeginPlacement(GameObject towerPrefab, int cost)
+    public void BeginPlacement(TowerData towerdata)
     {
-        if (towerPrefab == null) return;
+        if (towerdata.towerPrefab == null) return;
 
         // If already placing something, cancel the current ghost
         if (ghostTowerObj != null)
             CancelPlacement();
 
         // Sanity
-        cost = Mathf.Max(0, cost);
+        int cost = towerdata.price;
 
         // If you use money, require affordability before even starting placement
         if (money != null && !money.CanAfford(cost))
@@ -84,7 +84,7 @@ public class TowerPlacementManager : MonoBehaviour
 
         pendingCost = cost;
 
-        ghostTowerObj = Instantiate(towerPrefab);
+        ghostTowerObj = Instantiate(towerdata.towerPrefab);
         ghostTower = ghostTowerObj.GetComponent<Tower>();
 
         if (ghostTower == null)
