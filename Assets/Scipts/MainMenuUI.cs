@@ -27,7 +27,6 @@ public class MainMenuOverlayUI : MonoBehaviour
     {
         EnsureEventSystem();
 
-        // Load sprites from Resources
         Sprite bg = Resources.Load<Sprite>(backgroundPath);
         if (bg == null)
         {
@@ -54,28 +53,23 @@ public class MainMenuOverlayUI : MonoBehaviour
 
     private void EnsureEventSystem()
     {
-        // If another scene/manager already made one, do nothing.
         if (EventSystem.current != null) return;
 
         var esGO = new GameObject("EventSystem");
         esGO.AddComponent<EventSystem>();
 
 #if ENABLE_INPUT_SYSTEM
-        // New Input System: required for UI clicks when InputManager is disabled
         esGO.AddComponent<InputSystemUIInputModule>();
 #else
-        // Old Input System fallback
         esGO.AddComponent<StandaloneInputModule>();
 #endif
     }
 
     private void CreateUI(Sprite backgroundSprite, Sprite startSprite, Sprite settingsSprite)
     {
-        // If a previous run left a canvas (rare), clean it.
         var existing = GameObject.Find("MainMenuCanvas");
         if (existing != null) Destroy(existing);
 
-        // Canvas
         var canvasGO = new GameObject("MainMenuCanvas");
         var canvas = canvasGO.AddComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
@@ -87,13 +81,16 @@ public class MainMenuOverlayUI : MonoBehaviour
 
         canvasGO.AddComponent<GraphicRaycaster>();
 
-        // Background (IMPORTANT: do not block clicks)
+        // ===== Background (FULL SCREEN, NO BLUE EDGE) =====
         var bgGO = new GameObject("Background");
         bgGO.transform.SetParent(canvasGO.transform, false);
+
         var bgImage = bgGO.AddComponent<Image>();
         bgImage.sprite = backgroundSprite;
-        bgImage.preserveAspect = true;
-        bgImage.raycastTarget = false; // ✅ prevents eating clicks
+
+        // ✅ 关键改动：铺满屏幕
+        bgImage.preserveAspect = false;
+        bgImage.raycastTarget = false;
 
         var bgRT = bgImage.rectTransform;
         bgRT.anchorMin = Vector2.zero;
@@ -101,74 +98,56 @@ public class MainMenuOverlayUI : MonoBehaviour
         bgRT.offsetMin = Vector2.zero;
         bgRT.offsetMax = Vector2.zero;
 
-        // Start Button
+        // ===== Start Button =====
         CreateSpriteButton(
-            parent: canvasGO.transform,
-            name: "StartButton",
-            sprite: startSprite,
-            anchoredPos: startAnchoredPos,
-            size: buttonSize,
-            onClick: () =>
-            {
-                Debug.Log("START CLICKED");
-                LoadSceneSafe(startSceneName);
-            }
+            canvasGO.transform,
+            "StartButton",
+            startSprite,
+            startAnchoredPos,
+            buttonSize,
+            () => LoadSceneSafe(startSceneName)
         );
 
-        // Settings Button
+        // ===== Settings Button =====
         CreateSpriteButton(
-            parent: canvasGO.transform,
-            name: "SettingsButton",
-            sprite: settingsSprite,
-            anchoredPos: settingsAnchoredPos,
-            size: buttonSize,
-            onClick: () =>
-            {
-                Debug.Log("SETTINGS CLICKED");
-                LoadSceneSafe(settingsSceneName);
-            }
+            canvasGO.transform,
+            "SettingsButton",
+            settingsSprite,
+            settingsAnchoredPos,
+            buttonSize,
+            () => LoadSceneSafe(settingsSceneName)
         );
     }
 
-    private void CreateSpriteButton(Transform parent, string name, Sprite sprite, Vector2 anchoredPos, Vector2 size, System.Action onClick)
+    private void CreateSpriteButton(
+        Transform parent,
+        string name,
+        Sprite sprite,
+        Vector2 anchoredPos,
+        Vector2 size,
+        System.Action onClick)
     {
         var btnObj = new GameObject(name);
         btnObj.transform.SetParent(parent, false);
 
-        // RectTransform
         var rt = btnObj.AddComponent<RectTransform>();
         rt.sizeDelta = size;
         rt.anchoredPosition = anchoredPos;
-        rt.anchorMin = new Vector2(0.5f, 0.5f);
-        rt.anchorMax = new Vector2(0.5f, 0.5f);
+        rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
         rt.pivot = new Vector2(0.5f, 0.5f);
 
-        // Image
         var img = btnObj.AddComponent<Image>();
         img.sprite = sprite;
         img.preserveAspect = true;
-        img.raycastTarget = true; // ✅ make sure it receives clicks
+        img.raycastTarget = true;
 
-        // Button
         var btn = btnObj.AddComponent<Button>();
         btn.transition = Selectable.Transition.None;
-
-        btn.onClick.AddListener(() =>
-        {
-            try { onClick?.Invoke(); }
-            catch (System.Exception e) { Debug.LogError(e); }
-        });
+        btn.onClick.AddListener(() => onClick?.Invoke());
     }
 
     private void LoadSceneSafe(string sceneName)
     {
-        if (string.IsNullOrEmpty(sceneName))
-        {
-            Debug.LogError("Scene name is empty.");
-            return;
-        }
-
-        // This checks if the scene is in Build Settings
         if (!Application.CanStreamedLevelBeLoaded(sceneName))
         {
             Debug.LogError($"Cannot load scene '{sceneName}'. Add it to Build Settings.");
