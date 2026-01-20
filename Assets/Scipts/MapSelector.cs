@@ -8,7 +8,7 @@ using UnityEngine.EventSystems;
 
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem.UI;
-using UnityEngine.InputSystem; // ✅ NEW: for Mouse.current
+using UnityEngine.InputSystem; // for Mouse.current / Keyboard.current
 #endif
 
 public class MapSelector : MonoBehaviour
@@ -47,31 +47,19 @@ public class MapSelector : MonoBehaviour
     // UI layout (MapSelectUI)
     // ============================
     [Header("UI Target Area")]
-    [Tooltip("Drag ScenarioSlots here if you want. If empty, it will auto-find by name.")]
     public RectTransform targetArea;
-
-    [Tooltip("Auto-find object by this name (recommended: ScenarioSlots under Canvas).")]
     public string autoFindTargetAreaName = "ScenarioSlots";
 
     [Header("Button Layout (Map previews)")]
-    [Tooltip("Size of each map preview button (W,H). If maps look too tall, reduce H.")]
     public Vector2 buttonSize = new Vector2(520, 220);
-
-    [Tooltip("Spacing between two map buttons.")]
     public float spacing = 80f;
 
     [Header("ScenarioSlots Area Control (force by code)")]
-    [Tooltip("Force ScenarioSlots to use center anchor/pivot and these size/position. This prevents teammates from messing it up.")]
     public bool forceTargetAreaRect = true;
-
-    [Tooltip("ScenarioSlots Rect size (the black area space). If 0, it auto-calculates from buttons.")]
     public Vector2 targetAreaSize = Vector2.zero;
-
-    [Tooltip("ScenarioSlots anchoredPosition. Use this to move the two maps up/down/left/right into the black box.")]
     public Vector2 targetAreaAnchoredPos = new Vector2(0f, 80f);
 
     [Header("Optional: Crop (Mask)")]
-    [Tooltip("If true, add a Mask so images never overflow the button rect.")]
     public bool addMaskToButtons = true;
 
     // ============================
@@ -91,6 +79,13 @@ public class MapSelector : MonoBehaviour
     private TMP_Text _historyText;
 
     private GameObject _generatedCanvas;
+
+    // ============================
+    // ✅ NEW: PausePanel (ESC)
+    // ============================
+    [Header("Pause (ESC)")]
+    public string pausePanelName = "PausePanel"; // 你的层级里就是 PausePanel
+    private GameObject _pausePanel;
 
     // ============================
     // Unity lifecycle
@@ -127,6 +122,7 @@ public class MapSelector : MonoBehaviour
         }
 
         SetupHistoryUI();
+        SetupPausePanelUI();   // ✅ NEW
         BuildUI();
     }
 
@@ -134,7 +130,20 @@ public class MapSelector : MonoBehaviour
     {
         if (mode != ModeType.MapSelectUI) return;
 
-        // ✅ 兜底右键：不依赖 Input System UI/RightClick action
+        // ============================
+        // ✅ NEW: ESC toggle PausePanel
+        // ============================
+#if ENABLE_INPUT_SYSTEM
+        var kb = Keyboard.current;
+        if (kb != null && kb.escapeKey.wasPressedThisFrame)
+#else
+        if (Input.GetKeyDown(KeyCode.Escape))
+#endif
+        {
+            TogglePausePanel();
+        }
+
+        // ✅ Right click history
 #if ENABLE_INPUT_SYSTEM
         if (Mouse.current != null && Mouse.current.rightButton.wasPressedThisFrame)
 #else
@@ -165,6 +174,7 @@ public class MapSelector : MonoBehaviour
         else
         {
             SetupHistoryUI();
+            SetupPausePanelUI(); // ✅ NEW
             BuildUI();
         }
     }
@@ -243,7 +253,6 @@ public class MapSelector : MonoBehaviour
         {
             string id = mapIds[i];
             string path = i < mapPreviewPaths.Count ? mapPreviewPaths[i] : "";
-
             string mapIdLocal = id;
 
             var btnGO = new GameObject($"MapBtn_{id}");
@@ -302,7 +311,7 @@ public class MapSelector : MonoBehaviour
 
     private void ApplySprite(Image img, string id, string path)
     {
-        img.raycastTarget = false; // ✅ 不吃事件，避免挡住 MapBtn 的命中
+        img.raycastTarget = false;
         img.type = Image.Type.Simple;
         img.preserveAspect = true;
 
@@ -314,9 +323,6 @@ public class MapSelector : MonoBehaviour
         else Debug.LogWarning($"[MapSelector] Missing sprite for '{id}': Resources/{path}.png");
     }
 
-    // ============================
-    // ✅ 兜底：鼠标下找到 MapBtn_XXX
-    // ============================
     private bool TryGetMapButtonUnderMouse(out string mapId, out int index)
     {
         mapId = null;
@@ -341,14 +347,12 @@ public class MapSelector : MonoBehaviour
         for (int r = 0; r < results.Count; r++)
         {
             Transform t = results[r].gameObject.transform;
-
             while (t != null)
             {
                 if (t.name.StartsWith("MapBtn_", StringComparison.OrdinalIgnoreCase))
                 {
                     string id = t.name.Substring("MapBtn_".Length);
                     int i = mapIds.IndexOf(id);
-
                     if (i >= 0)
                     {
                         mapId = id;
@@ -401,11 +405,8 @@ public class MapSelector : MonoBehaviour
         _historyPanel = panelTf.gameObject;
 
         Transform textTf = _historyPanel.transform.Find(historyTextName);
-        if (textTf != null)
-            _historyText = textTf.GetComponent<TMP_Text>();
-
-        if (_historyText == null)
-            _historyText = _historyPanel.GetComponentInChildren<TMP_Text>(true);
+        if (textTf != null) _historyText = textTf.GetComponent<TMP_Text>();
+        if (_historyText == null) _historyText = _historyPanel.GetComponentInChildren<TMP_Text>(true);
 
         if (_historyText == null)
         {
@@ -454,6 +455,66 @@ public class MapSelector : MonoBehaviour
             return "Zongcai: Defend the Chairman’s headquarters against enemy forces seeking to destroy leadership.";
 
         return $"{mapId}: (no history text set)";
+    }
+
+    // ============================
+    // ✅ NEW: PausePanel UI
+    // ============================
+    private void SetupPausePanelUI()
+    {
+        _pausePanel = FindSceneObjectByName(pausePanelName);
+        if (_pausePanel == null)
+        {
+            Debug.LogWarning($"[MapSelector] '{pausePanelName}' not found in scene '{SceneManager.GetActiveScene().name}'.");
+            return;
+        }
+
+        // 你希望默认关着，就保持关着
+        // _pausePanel.SetActive(false);
+
+        Debug.Log($"[MapSelector] PausePanel found: {_pausePanel.name} (active={_pausePanel.activeSelf})");
+    }
+
+    private void TogglePausePanel()
+    {
+        if (_pausePanel == null)
+        {
+            SetupPausePanelUI();
+            if (_pausePanel == null) return;
+        }
+
+        bool next = !_pausePanel.activeSelf;
+        _pausePanel.SetActive(next);
+
+        // 可选：打开暂停时，把 history 关掉避免挡住
+        if (next && _historyPanel != null) _historyPanel.SetActive(false);
+
+        Debug.Log($"[MapSelector] ESC -> PausePanel {(next ? "OPEN" : "CLOSE")}");
+    }
+
+    private GameObject FindSceneObjectByName(string objName)
+    {
+        var activeScene = SceneManager.GetActiveScene();
+        var all = Resources.FindObjectsOfTypeAll<Transform>();
+
+        for (int i = 0; i < all.Length; i++)
+        {
+            var t = all[i];
+            if (t == null) continue;
+            if (t.name != objName) continue;
+
+            var go = t.gameObject;
+
+            // 只要场景里真实物体（排除 prefab/资源）
+            if (!go.scene.IsValid()) continue;
+
+            // 只要当前激活场景里的
+            if (go.scene != activeScene) continue;
+
+            return go;
+        }
+
+        return null;
     }
 
     // ============================

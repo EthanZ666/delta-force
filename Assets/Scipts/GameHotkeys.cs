@@ -32,7 +32,6 @@ public static class GameHotkeys
         // ===== Splash：任意键进主菜单 =====
         if (s == SCENE_SPLASH)
         {
-            // New Input System 的 anyKey
             if (kb.anyKey.wasPressedThisFrame)
                 TryLoad(SCENE_MAIN_MENU);
             return;
@@ -46,11 +45,9 @@ public static class GameHotkeys
             return;
         }
 
-        // ===== Map Select：Esc 返回主菜单 =====
+        // ✅✅✅ Map Select：方案A => 这里不处理 Esc（交给 MapSelector 自己处理 PausePanel）
         if (s == SCENE_MAP_SELECT)
         {
-            if (kb.escapeKey.wasPressedThisFrame)
-                TryLoad(SCENE_MAIN_MENU);
             return;
         }
 
@@ -114,14 +111,12 @@ public static class GameHotkeys
         float v = AudioListener.volume;
         bool changed = false;
 
-        // +（=） 或 小键盘 +
         if (kb.equalsKey.wasPressedThisFrame || kb.numpadPlusKey.wasPressedThisFrame)
         {
             v += 0.05f;
             changed = true;
         }
 
-        // - 或 小键盘 -
         if (kb.minusKey.wasPressedThisFrame || kb.numpadMinusKey.wasPressedThisFrame)
         {
             v -= 0.05f;
@@ -138,6 +133,33 @@ public static class GameHotkeys
 
         SettingsChanged?.Invoke();
         Debug.Log($"[Master Volume] {v:0.00}");
+    }
+
+    // ✅ NEW: 在当前场景里找到（包含 inactive）并 toggle 指定面板
+    private static void TogglePanelInActiveScene(string panelName)
+    {
+        var activeScene = SceneManager.GetActiveScene();
+
+        var all = Resources.FindObjectsOfTypeAll<Transform>();
+        for (int i = 0; i < all.Length; i++)
+        {
+            var t = all[i];
+            if (t == null) continue;
+            if (t.name != panelName) continue;
+
+            var go = t.gameObject;
+
+            // 排除 prefab/资源，只要场景里真实物体
+            if (!go.scene.IsValid()) continue;
+
+            // 只切当前激活场景里的
+            if (go.scene != activeScene) continue;
+
+            go.SetActive(!go.activeSelf);
+            return;
+        }
+
+        Debug.LogWarning($"[GameHotkeys] '{panelName}' not found in active scene '{activeScene.name}'.");
     }
 
     private static void TryLoad(string sceneName)
