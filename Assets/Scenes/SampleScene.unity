@@ -119,6 +119,65 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &131674271
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 131674272}
+  - component: {fileID: 131674273}
+  m_Layer: 0
+  m_Name: TowerPlacementManager
+  m_TagString: TowerPlacementManager
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &131674272
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 131674271}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 76.67224, y: -46.60602, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &131674273
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 131674271}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c7d291f5840dc148a1b31e9c0c562b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TowerPlacementManager
+  mainCamera: {fileID: 519420031}
+  money: {fileID: 818236164}
+  rangeIndicatorPrefab: {fileID: 0}
+  placeableMask:
+    serializedVersion: 2
+    m_Bits: 256
+  blockedMask:
+    serializedVersion: 2
+    m_Bits: 0
+  towerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  towerFootprintRadius: 0.45
+  ghostAlpha: 0.6
+  indicatorAlpha: 0.25
 --- !u!1 &258737005
 GameObject:
   m_ObjectHideFlags: 0
@@ -1606,6 +1665,11 @@ MonoBehaviour:
   targetAreaSize: {x: 0, y: 0}
   targetAreaAnchoredPos: {x: 0, y: 80}
   addMaskToButtons: 1
+  mapHistories:
+  - 'Daba: (write your history here)'
+  - 'Zongcai: (write your history here)'
+  historyPanelName: HistoryPanel
+  historyTextName: HistoryText
 --- !u!1 &1976848885
 GameObject:
   m_ObjectHideFlags: 0
@@ -1880,7 +1944,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2044703673}
   - component: {fileID: 2044703672}
-  m_Layer: 0
+  - component: {fileID: 2044703674}
+  m_Layer: 8
   m_Name: Map Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1960,6 +2025,52 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &2044703674
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2044703671}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 18, y: 13}
+    newSize: {x: 18, y: 13}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 18, y: 13}
+  m_EdgeRadius: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -1977,4 +2088,5 @@ SceneRoots:
   - {fileID: 2044703673}
   - {fileID: 258737007}
   - {fileID: 818236165}
+  - {fileID: 131674272}
   - {fileID: 1096566192}
