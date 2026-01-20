@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: b9f0fd87ebcda0042baf7af5d4d26b4b
+guid: d23b8bd4b71c9cf4ca578d3b366df92f
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7796140861258928445
-    second: kemiao_0
+      213: 6170778342771653296
+    second: "\u65E0\u6807\u98981056_20260119213625_edit_33301898096480_0"
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: kemiao_0
+      name: "\u65E0\u6807\u98981056_20260119213625_edit_33301898096480_0"
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 768
-        height: 924
+        x: 23
+        y: 30
+        width: 190
+        height: 308
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: d311f3ebec4713c60800000000000000
-      internalID: 7796140861258928445
+      spriteID: 0baf394653203a550800000000000000
+      internalID: 6170778342771653296
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      kemiao_0: 7796140861258928445
+      "\u65E0\u6807\u98981056_20260119213625_edit_33301898096480_0": 6170778342771653296
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
