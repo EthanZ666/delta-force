@@ -8,6 +8,7 @@ using UnityEngine.EventSystems;
 
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem.UI;
+using UnityEngine.InputSystem; // ✅ NEW: for Mouse.current
 #endif
 
 public class MapSelector : MonoBehaviour
@@ -54,7 +55,7 @@ public class MapSelector : MonoBehaviour
 
     [Header("Button Layout (Map previews)")]
     [Tooltip("Size of each map preview button (W,H). If maps look too tall, reduce H.")]
-    public Vector2 buttonSize = new Vector2(520, 220); // 默认把高度变矮（原来320太高）
+    public Vector2 buttonSize = new Vector2(520, 220);
 
     [Tooltip("Spacing between two map buttons.")]
     public float spacing = 80f;
@@ -67,27 +68,23 @@ public class MapSelector : MonoBehaviour
     public Vector2 targetAreaSize = Vector2.zero;
 
     [Tooltip("ScenarioSlots anchoredPosition. Use this to move the two maps up/down/left/right into the black box.")]
-    public Vector2 targetAreaAnchoredPos = new Vector2(0f, 80f); // 往上提一点，接近黑框中间
+    public Vector2 targetAreaAnchoredPos = new Vector2(0f, 80f);
 
     [Header("Optional: Crop (Mask)")]
     [Tooltip("If true, add a Mask so images never overflow the button rect.")]
     public bool addMaskToButtons = true;
 
     // ============================
-    // NEW: Right-click History UI
+    // History (Right Click)
     // ============================
     [Header("History (Right Click)")]
-    [Tooltip("History strings in the same order as mapIds. Right-click a map to show.")]
     public List<string> mapHistories = new List<string>
     {
         "Daba: (write your history here)",
         "Zongcai: (write your history here)"
     };
 
-    [Tooltip("A Panel GameObject name under Canvas to show history.")]
     public string historyPanelName = "HistoryPanel";
-
-    [Tooltip("A Text GameObject name (Unity UI Text) under HistoryPanel.")]
     public string historyTextName = "HistoryText";
 
     private GameObject _historyPanel;
@@ -133,6 +130,24 @@ public class MapSelector : MonoBehaviour
         BuildUI();
     }
 
+    private void Update()
+    {
+        if (mode != ModeType.MapSelectUI) return;
+
+        // ✅ 兜底右键：不依赖 Input System UI/RightClick action
+#if ENABLE_INPUT_SYSTEM
+        if (Mouse.current != null && Mouse.current.rightButton.wasPressedThisFrame)
+#else
+        if (Input.GetMouseButtonDown(1))
+#endif
+        {
+            if (TryGetMapButtonUnderMouse(out string mapId, out int index))
+            {
+                ShowHistory(mapId, index);
+            }
+        }
+    }
+
     private void OnDestroy()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
@@ -169,7 +184,6 @@ public class MapSelector : MonoBehaviour
             return;
         }
 
-        // fallback canvas（不推荐）
         _generatedCanvas = new GameObject("MapSelectCanvas");
         var canvas = _generatedCanvas.AddComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
@@ -185,7 +199,6 @@ public class MapSelector : MonoBehaviour
 
     private void BuildButtonsUnderTargetArea(RectTransform parent)
     {
-        // 1️⃣ 清理旧按钮
         for (int i = parent.childCount - 1; i >= 0; i--)
         {
             var c = parent.GetChild(i);
@@ -195,7 +208,6 @@ public class MapSelector : MonoBehaviour
             }
         }
 
-        // 2️⃣ 确保 HorizontalLayoutGroup，并且强制“不会被队友改乱”
         var hlg = parent.GetComponent<HorizontalLayoutGroup>();
         if (hlg == null) hlg = parent.gameObject.AddComponent<HorizontalLayoutGroup>();
 
@@ -209,7 +221,6 @@ public class MapSelector : MonoBehaviour
 
         hlg.padding = new RectOffset(0, 0, 0, 0);
 
-        // 3️⃣ 强制 ScenarioSlots 的 Rect（让它进黑框里）
         if (forceTargetAreaRect)
         {
             parent.anchorMin = parent.anchorMax = new Vector2(0.5f, 0.5f);
@@ -228,11 +239,12 @@ public class MapSelector : MonoBehaviour
             parent.anchoredPosition = targetAreaAnchoredPos;
         }
 
-        // 4️⃣ 生成按钮
         for (int i = 0; i < mapIds.Count; i++)
         {
             string id = mapIds[i];
             string path = i < mapPreviewPaths.Count ? mapPreviewPaths[i] : "";
+
+            string mapIdLocal = id;
 
             var btnGO = new GameObject($"MapBtn_{id}");
             btnGO.transform.SetParent(parent, false);
@@ -261,6 +273,7 @@ public class MapSelector : MonoBehaviour
 
                 var imgChild = new GameObject("Preview");
                 imgChild.transform.SetParent(btnGO.transform, false);
+
                 var imageRect = imgChild.AddComponent<RectTransform>();
                 imageRect.anchorMin = Vector2.zero;
                 imageRect.anchorMax = Vector2.one;
@@ -273,9 +286,7 @@ public class MapSelector : MonoBehaviour
                 var btn = btnGO.AddComponent<Button>();
                 btn.transition = Selectable.Transition.None;
                 btn.targetGraphic = maskImg;
-                btn.onClick.AddListener(() => SelectMapAndLoad(id));
-
-                AddRightClickHistory(btnGO, id, i);
+                btn.onClick.AddListener(() => SelectMapAndLoad(mapIdLocal));
             }
             else
             {
@@ -284,16 +295,14 @@ public class MapSelector : MonoBehaviour
 
                 var btn = btnGO.AddComponent<Button>();
                 btn.transition = Selectable.Transition.None;
-                btn.onClick.AddListener(() => SelectMapAndLoad(id));
-
-                AddRightClickHistory(btnGO, id, i);
+                btn.onClick.AddListener(() => SelectMapAndLoad(mapIdLocal));
             }
         }
     }
 
     private void ApplySprite(Image img, string id, string path)
     {
-        img.raycastTarget = true;
+        img.raycastTarget = false; // ✅ 不吃事件，避免挡住 MapBtn 的命中
         img.type = Image.Type.Simple;
         img.preserveAspect = true;
 
@@ -301,18 +310,61 @@ public class MapSelector : MonoBehaviour
         if (!string.IsNullOrWhiteSpace(path))
             sprite = Resources.Load<Sprite>(path);
 
-        if (sprite != null)
-        {
-            img.sprite = sprite;
-        }
-        else
-        {
-            Debug.LogWarning($"[MapSelector] Missing sprite for '{id}': Resources/{path}.png");
-        }
+        if (sprite != null) img.sprite = sprite;
+        else Debug.LogWarning($"[MapSelector] Missing sprite for '{id}': Resources/{path}.png");
     }
 
     // ============================
-    // History (Right click)
+    // ✅ 兜底：鼠标下找到 MapBtn_XXX
+    // ============================
+    private bool TryGetMapButtonUnderMouse(out string mapId, out int index)
+    {
+        mapId = null;
+        index = -1;
+
+        if (EventSystem.current == null) return false;
+
+        var ped = new PointerEventData(EventSystem.current)
+        {
+#if ENABLE_INPUT_SYSTEM
+            position = Mouse.current != null ? Mouse.current.position.ReadValue() : Vector2.zero
+#else
+            position = Input.mousePosition
+#endif
+        };
+
+        var results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(ped, results);
+
+        if (results == null || results.Count == 0) return false;
+
+        for (int r = 0; r < results.Count; r++)
+        {
+            Transform t = results[r].gameObject.transform;
+
+            while (t != null)
+            {
+                if (t.name.StartsWith("MapBtn_", StringComparison.OrdinalIgnoreCase))
+                {
+                    string id = t.name.Substring("MapBtn_".Length);
+                    int i = mapIds.IndexOf(id);
+
+                    if (i >= 0)
+                    {
+                        mapId = id;
+                        index = i;
+                        return true;
+                    }
+                }
+                t = t.parent;
+            }
+        }
+
+        return false;
+    }
+
+    // ============================
+    // History UI
     // ============================
     private void SetupHistoryUI()
     {
@@ -361,45 +413,15 @@ public class MapSelector : MonoBehaviour
             return;
         }
 
-        // ============================
-        // ✅ NEW: 不拦截点击 + 不整屏变灰
-        // ============================
-        // 1) 让 Panel 及其所有子UI都不吃点击（这样地图还能点）
         var graphics = _historyPanel.GetComponentsInChildren<UnityEngine.UI.Graphic>(true);
         for (int i = 0; i < graphics.Length; i++)
-        {
             graphics[i].raycastTarget = false;
-        }
 
-        // 2) 如果 HistoryPanel 自己有 Image（你整屏变灰就是它），直接设透明（只留文字）
         var panelImg = _historyPanel.GetComponent<Image>();
         if (panelImg != null)
-        {
             panelImg.color = new Color(panelImg.color.r, panelImg.color.g, panelImg.color.b, 0f);
-        }
 
         _historyPanel.SetActive(false);
-    }
-
-    private void AddRightClickHistory(GameObject btnGO, string mapId, int index)
-    {
-        var trigger = btnGO.GetComponent<EventTrigger>();
-        if (trigger == null) trigger = btnGO.AddComponent<EventTrigger>();
-        if (trigger.triggers == null) trigger.triggers = new List<EventTrigger.Entry>();
-
-        var entry = new EventTrigger.Entry { eventID = EventTriggerType.PointerClick };
-        entry.callback.AddListener((data) =>
-        {
-            var ped = data as PointerEventData;
-            if (ped == null) return;
-
-            if (ped.button == PointerEventData.InputButton.Right)
-            {
-                ShowHistory(mapId, index);
-            }
-        });
-
-        trigger.triggers.Add(entry);
     }
 
     private void ShowHistory(string mapId, int index)
@@ -413,9 +435,6 @@ public class MapSelector : MonoBehaviour
 
         string text = GetHistoryText(mapId, index);
 
-        // ============================
-        // ✅ NEW: toggle（同一张右键再次关闭）
-        // ============================
         if (_historyPanel.activeSelf && _historyText.text == text)
         {
             _historyPanel.SetActive(false);
@@ -429,14 +448,10 @@ public class MapSelector : MonoBehaviour
     private string GetHistoryText(string mapId, int index)
     {
         if (mapId.Equals("Daba", StringComparison.OrdinalIgnoreCase))
-        {
             return "Daba: Defend the strategic dam from an enemy landing. Losing control would cause widespread destruction.";
-        }
 
         if (mapId.Equals("Zongcai", StringComparison.OrdinalIgnoreCase))
-        {
             return "Zongcai: Defend the Chairman’s headquarters against enemy forces seeking to destroy leadership.";
-        }
 
         return $"{mapId}: (no history text set)";
     }
