@@ -34,6 +34,11 @@ public class TowerPlacementManager : MonoBehaviour
 
     private int pendingCost;
     private GameObject pendingTowerPrefab;
+    private TowerData pendingTowerData;
+
+
+    public System.Action<TowerData> OnTowerPlaced;
+
 
     void Awake()
     {
@@ -76,8 +81,11 @@ public class TowerPlacementManager : MonoBehaviour
     }
 
     public void BeginPlacement(TowerData towerdata)
-    {
-        if (towerdata == null || towerdata.towerPrefab == null) return;
+{
+    if (towerdata == null || towerdata.towerPrefab == null) return;
+
+    pendingTowerData = towerdata;
+
 
         if (ghostTowerObj != null)
             CancelPlacement();
@@ -146,11 +154,13 @@ public class TowerPlacementManager : MonoBehaviour
 
             if (autoNormalizeScale)
                 NormalizeToTargetHeight(realTower, targetWorldHeight);
+            
         }
         else
         {
             Debug.LogError("No pending tower prefab stored. Did BeginPlacement run?");
         }
+        OnTowerPlaced?.Invoke(pendingTowerData);
 
         CleanupPlacementObjectsAndState();
     }
@@ -177,6 +187,7 @@ public class TowerPlacementManager : MonoBehaviour
         pendingCost = 0;
         pendingTowerPrefab = null;
     }
+    
 
     private Vector3 GetMouseWorldPosition()
     {

@@ -25,7 +25,7 @@ public class ShopItemUI : MonoBehaviour
             return;
         }
 
-        placement = placementObj.GetComponent<TowerPlacementManager>(); // ✅ assign the FIELD
+        placement = placementObj.GetComponent<TowerPlacementManager>(); 
         if (placement == null)
         {
             return;

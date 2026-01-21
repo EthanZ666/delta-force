@@ -2577,6 +2577,7 @@ MonoBehaviour:
   shopContent: {fileID: 1475120397}
   shopItemPrefab: {fileID: 7209452305373418343, guid: 007a94dafe7557c4d9b50622befc9a4b, type: 3}
   shopSize: 5
+  placementManager: {fileID: 131674273}
 --- !u!1 &1186416075
 GameObject:
   m_ObjectHideFlags: 0

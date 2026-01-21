@@ -7,11 +7,14 @@ public class TowerShop : MonoBehaviour
     public Transform shopContent;
     public GameObject shopItemPrefab;
     public int shopSize = 10;
+    [SerializeField] private TowerPlacementManager placementManager;
+
 
     private List<TowerData> available = new();
 
     void Start()
     {
+        placementManager.OnTowerPlaced += HandleTowerPurchased;
         GenerateShop();
     }
 
@@ -33,6 +36,20 @@ public class TowerShop : MonoBehaviour
         float efficiency = (tower.damage*10 + tower.range*5 )/ tower.price;
         return efficiency;
     }
+    void HandleTowerPurchased(TowerData purchased)
+{
+    if (!available.Contains(purchased))
+        return;
+
+    available.Remove(purchased);
+
+    TowerData newTower = database.GetRandomTower();
+    available.Add(newTower);
+
+    BubbleSortByEfficiency(available);
+    RenderShop();
+}
+
 
     void BubbleSortByEfficiency(List<TowerData> list)
 {
