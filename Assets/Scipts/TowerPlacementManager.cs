@@ -19,6 +19,14 @@ public class TowerPlacementManager : MonoBehaviour
     [SerializeField, Range(0.05f, 1f)] private float ghostAlpha = 0.6f;
     [SerializeField, Range(0.05f, 1f)] private float indicatorAlpha = 0.25f;
 
+    [Header("Auto Scale (Normalize Prefab Size)")]
+    [SerializeField] private bool autoNormalizeScale = true;
+
+    [SerializeField] private float targetWorldHeight = 1.0f;
+
+    [Header("Range Indicator Scaling")]
+    [SerializeField, Range(0.1f, 2f)] private float rangeIndicatorRadiusMultiplier = 1.0f;
+
     private GameObject ghostTowerObj;
     private Tower ghostTower;
     private MonoBehaviour[] disabledScripts;
@@ -47,7 +55,6 @@ public class TowerPlacementManager : MonoBehaviour
         bool valid = IsValidPlacement(worldPos);
         SetIndicatorColour(valid);
 
-        // Cancel on right click or escape
         bool escapePressed = Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame;
         bool rightClick = Mouse.current != null && Mouse.current.rightButton.wasPressedThisFrame;
 
@@ -57,11 +64,9 @@ public class TowerPlacementManager : MonoBehaviour
             return;
         }
 
-        // Place on left click
         bool leftClick = Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame;
         if (leftClick)
         {
-            // Don't place if clicking UI
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
                 return;
 
@@ -87,6 +92,10 @@ public class TowerPlacementManager : MonoBehaviour
         pendingCost = cost;
 
         ghostTowerObj = Instantiate(towerdata.towerPrefab);
+
+        if (autoNormalizeScale)
+            NormalizeToTargetHeight(ghostTowerObj, targetWorldHeight);
+
         ghostTower = ghostTowerObj.GetComponent<Tower>();
 
         if (ghostTower == null)
@@ -113,8 +122,8 @@ public class TowerPlacementManager : MonoBehaviour
             rangeIndicatorObj = Instantiate(rangeIndicatorPrefab);
             rangeIndicatorSR = rangeIndicatorObj.GetComponentInChildren<SpriteRenderer>();
 
-            float r = Mathf.Max(0.1f, ghostTower.range);
-            rangeIndicatorObj.transform.localScale = new Vector3(r * 2f, r * 2f, 1f);
+            float r = Mathf.Max(0.1f, ghostTower.range) * rangeIndicatorRadiusMultiplier;
+            SetRangeIndicatorRadius(rangeIndicatorObj, rangeIndicatorSR, r);
         }
 
         SetIndicatorColour(false);
@@ -226,5 +235,44 @@ public class TowerPlacementManager : MonoBehaviour
             c.a = alpha;
             sr.color = c;
         }
+    }
+
+    private void NormalizeToTargetHeight(GameObject root, float desiredHeight)
+    {
+        if (root == null) return;
+
+        var renderers = root.GetComponentsInChildren<SpriteRenderer>(true);
+        if (renderers == null || renderers.Length == 0) return;
+
+        Vector3 originalScale = root.transform.localScale;
+        root.transform.localScale = Vector3.one;
+
+        Bounds b = renderers[0].bounds;
+        for (int i = 1; i < renderers.Length; i++)
+            b.Encapsulate(renderers[i].bounds);
+
+        float currentHeight = b.size.y;
+        if (currentHeight <= 0.0001f)
+        {
+            root.transform.localScale = originalScale;
+            return;
+        }
+
+        float factor = desiredHeight / currentHeight;
+        root.transform.localScale = originalScale * factor;
+    }
+
+
+    private void SetRangeIndicatorRadius(GameObject indicatorObj, SpriteRenderer sr, float radius)
+    {
+        if (indicatorObj == null || sr == null) return;
+
+        float currentDiameter = Mathf.Max(sr.bounds.size.x, sr.bounds.size.y);
+        if (currentDiameter <= 0.0001f) return;
+
+        float desiredDiameter = radius * 2f;
+        float factor = desiredDiameter / currentDiameter;
+
+        indicatorObj.transform.localScale *= factor;
     }
 }

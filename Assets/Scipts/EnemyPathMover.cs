@@ -14,7 +14,7 @@ public class EnemyPathMover : MonoBehaviour
     private Transform[] points;
     private int index;
 
-    //private PlayerBaseHealth baseHealth;
+    private MilitaryBase militaryBase;
     private bool finished;
 
     private void Awake()
@@ -62,19 +62,23 @@ public class EnemyPathMover : MonoBehaviour
             return;
         }
 
-        // baseHealth = baseObj.GetComponent<PlayerBaseHealth>();
-        // if (baseHealth == null)
-        // {
-        //     Debug.LogError("MilitaryBase object is missing PlayerBaseHealth component.");
-        // }
+        militaryBase = baseObj.GetComponent<MilitaryBase>();
+        if (militaryBase == null)
+        {
+            Debug.LogError("MilitaryBase object is missing the MilitaryBase component.");
+        }
     }
 
     private void MoveAlongPath()
     {
         Transform target = points[index];
 
-        Vector3 current = transform.position;
-        Vector3 next = Vector3.MoveTowards(current, target.position, enemy.Speed * Time.deltaTime);
+        Vector3 next = Vector3.MoveTowards(
+            transform.position,
+            target.position,
+            enemy.Speed * Time.deltaTime
+        );
+
         transform.position = next;
 
         if (Vector2.Distance(next, target.position) <= arriveDistance)
@@ -95,8 +99,8 @@ public class EnemyPathMover : MonoBehaviour
     {
         finished = true;
 
-        // if (baseHealth != null)
-        //     baseHealth.TakeDamage(enemy.Damage);
+        if (militaryBase != null)
+            militaryBase.TakeDamage(enemy.Damage);
 
         Destroy(gameObject);
     }

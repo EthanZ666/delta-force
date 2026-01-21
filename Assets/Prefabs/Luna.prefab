@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5908743251891074705}
   - component: {fileID: 3427937524373339527}
   - component: {fileID: 7369803082317839932}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Luna
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -78,8 +78,8 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1039298221
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_Sprite: {fileID: 3931876706860490803, guid: f78dbf06893cf3c4eb6747eb1466b99d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -115,7 +115,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1437911348342448988}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: FirePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}

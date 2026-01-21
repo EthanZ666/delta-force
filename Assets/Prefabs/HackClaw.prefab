@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5872276656001741422}
   - component: {fileID: 3779172656535012762}
   - component: {fileID: 4349440002500729668}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: HackClaw
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -78,8 +78,8 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1039298221
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_Sprite: {fileID: -7295180003055873367, guid: e9166b02ce15ef94d895b59effe47912, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -115,7 +115,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3259450608141201367}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: FirePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}

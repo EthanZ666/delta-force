@@ -7,6 +7,8 @@ TagManager:
   - Enemy
   - MoneyManager
   - TowerPlacementManager
+  - PathPoint
+  - MilitaryBase
   layers:
   - Default
   - TransparentFX
@@ -14,11 +16,11 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
-  - Ground
-  - 
   - Tower
+  - Enemy
+  - Bullets
+  - Ground
+  - Road
   - 
   - 
   - 
@@ -43,6 +45,21 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Ground
+    uniqueID: 281971239
+    locked: 0
+  - name: Road
+    uniqueID: 1634404293
+    locked: 0
+  - name: Enemy
+    uniqueID: 3463204397
+    locked: 0
+  - name: Bullets
+    uniqueID: 2298088115
+    locked: 0
+  - name: Tower
+    uniqueID: 3255669075
     locked: 0
   m_RenderingLayers:
   - Default
