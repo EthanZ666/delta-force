@@ -4,6 +4,13 @@ using UnityEngine;
 
 public class MusicPlayer : MonoBehaviour
 {
+    // ✅ Singleton
+    public static MusicPlayer Instance { get; private set; }
+
+    [Header("Singleton")]
+    [Tooltip("If true, keep one MusicPlayer across scenes.")]
+    public bool persistAcrossScenes = true;
+
     [Header("Audio Source (auto-get if empty)")]
     public AudioSource musicSource;
 
@@ -21,12 +28,28 @@ public class MusicPlayer : MonoBehaviour
     public int CurrentIndex => _currentIndex;
     public bool MusicOn => _musicOn;
 
+    // ✅ Use property (recommended) — DO NOT also define SongCount() with same name if you add method
+    public int SongCount => songs == null ? 0 : songs.Count;
+
     public event Action<int, AudioClip> SongChanged;
 
     private void Awake()
     {
-        // 如果你希望跨场景继续播放就打开这行
-        // DontDestroyOnLoad(gameObject);
+        // ✅ Singleton init + duplicate guard
+        if (Instance != null && Instance != this)
+        {
+            // 如果你不想重复实例存在，直接干掉新的
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+
+        if (persistAcrossScenes)
+        {
+            DontDestroyOnLoad(gameObject);
+        }
 
         if (musicSource == null)
         {
@@ -42,7 +65,6 @@ public class MusicPlayer : MonoBehaviour
     {
         LoadPrefs();
 
-        // 没歌就不做
         if (songs == null) songs = new List<AudioClip>();
         if (songs.Count == 0)
         {
@@ -50,14 +72,11 @@ public class MusicPlayer : MonoBehaviour
             return;
         }
 
-        // clamp index
         _currentIndex = Mathf.Clamp(_currentIndex, 0, songs.Count - 1);
 
-        // apply volume + on/off
         ApplyVolume();
         ApplyOnOff();
 
-        // 如果开着音乐就播放上次那首
         if (_musicOn)
         {
             PlaySong(_currentIndex);
@@ -67,11 +86,6 @@ public class MusicPlayer : MonoBehaviour
     // =========================
     // Public API
     // =========================
-    public int SongCount()
-    {
-        return songs == null ? 0 : songs.Count;
-    }
-
     public AudioClip GetSong(int index)
     {
         if (songs == null || songs.Count == 0) return null;
@@ -144,6 +158,12 @@ public class MusicPlayer : MonoBehaviour
         Debug.LogWarning($"[MusicPlayer] Song not found: {songName}");
     }
 
+    // ✅ keep compatibility with older code that calls PlayIndex(index)
+    public void PlayIndex(int index)
+    {
+        PlaySong(index);
+    }
+
     public void NextSong()
     {
         if (songs == null || songs.Count == 0) return;
@@ -204,7 +224,6 @@ public class MusicPlayer : MonoBehaviour
 
         if (_musicOn)
         {
-            // 有clip才播
             if (musicSource.clip == null && songs != null && songs.Count > 0)
             {
                 musicSource.clip = songs[Mathf.Clamp(_currentIndex, 0, songs.Count - 1)];
@@ -226,7 +245,6 @@ public class MusicPlayer : MonoBehaviour
         _musicOn = PlayerPrefs.GetInt(PREF_MUSIC_ON, 1) == 1;
         _currentIndex = PlayerPrefs.GetInt(PREF_SONG_INDEX, 0);
 
-        // volume key 可能你用的就是 volume_music
         if (!PlayerPrefs.HasKey(PREF_MUSIC_VOL))
         {
             PlayerPrefs.SetFloat(PREF_MUSIC_VOL, 1f);
@@ -239,5 +257,11 @@ public class MusicPlayer : MonoBehaviour
         PlayerPrefs.SetInt(PREF_MUSIC_ON, _musicOn ? 1 : 0);
         PlayerPrefs.SetInt(PREF_SONG_INDEX, _currentIndex);
         PlayerPrefs.Save();
+    }
+
+    private void OnDestroy()
+    {
+        // ✅ avoid stale Instance
+        if (Instance == this) Instance = null;
     }
 }
