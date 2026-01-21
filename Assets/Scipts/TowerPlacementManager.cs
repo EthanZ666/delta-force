@@ -21,7 +21,6 @@ public class TowerPlacementManager : MonoBehaviour
 
     [Header("Auto Scale (Normalize Prefab Size)")]
     [SerializeField] private bool autoNormalizeScale = true;
-
     [SerializeField] private float targetWorldHeight = 1.0f;
 
     [Header("Range Indicator Scaling")]
@@ -29,13 +28,12 @@ public class TowerPlacementManager : MonoBehaviour
 
     private GameObject ghostTowerObj;
     private Tower ghostTower;
-    private MonoBehaviour[] disabledScripts;
-    private Collider2D[] disabledColliders;
 
     private GameObject rangeIndicatorObj;
     private SpriteRenderer rangeIndicatorSR;
 
     private int pendingCost;
+    private GameObject pendingTowerPrefab;
 
     void Awake()
     {
@@ -71,7 +69,7 @@ public class TowerPlacementManager : MonoBehaviour
                 return;
 
             if (valid)
-                PlaceTower();
+                PlaceTower(worldPos);   
             else
                 CancelPlacement();
         }
@@ -79,7 +77,7 @@ public class TowerPlacementManager : MonoBehaviour
 
     public void BeginPlacement(TowerData towerdata)
     {
-        if (towerdata.towerPrefab == null) return;
+        if (towerdata == null || towerdata.towerPrefab == null) return;
 
         if (ghostTowerObj != null)
             CancelPlacement();
@@ -89,30 +87,32 @@ public class TowerPlacementManager : MonoBehaviour
         if (money != null && !money.CanAfford(cost))
             return;
 
-        pendingCost = cost;
+        pendingCost = Mathf.Max(0, cost);
+        pendingTowerPrefab = towerdata.towerPrefab;
 
-        ghostTowerObj = Instantiate(towerdata.towerPrefab);
+        ghostTowerObj = Instantiate(pendingTowerPrefab);
 
         if (autoNormalizeScale)
             NormalizeToTargetHeight(ghostTowerObj, targetWorldHeight);
 
         ghostTower = ghostTowerObj.GetComponent<Tower>();
-
         if (ghostTower == null)
         {
             Debug.LogError("Tower prefab must have a component that inherits from Tower.");
             Destroy(ghostTowerObj);
             ghostTowerObj = null;
+            ghostTower = null;
             pendingCost = 0;
+            pendingTowerPrefab = null;
             return;
         }
 
-        disabledColliders = ghostTowerObj.GetComponentsInChildren<Collider2D>(true);
-        foreach (var c in disabledColliders)
+        var ghostColliders = ghostTowerObj.GetComponentsInChildren<Collider2D>(true);
+        foreach (var c in ghostColliders)
             if (c != null) c.enabled = false;
 
-        disabledScripts = ghostTowerObj.GetComponentsInChildren<MonoBehaviour>(true);
-        foreach (var s in disabledScripts)
+        var ghostScripts = ghostTowerObj.GetComponentsInChildren<MonoBehaviour>(true);
+        foreach (var s in ghostScripts)
             if (s != null) s.enabled = false;
 
         SetAllSpriteAlpha(ghostTowerObj, ghostAlpha);
@@ -129,7 +129,7 @@ public class TowerPlacementManager : MonoBehaviour
         SetIndicatorColour(false);
     }
 
-    private void PlaceTower()
+    private void PlaceTower(Vector3 placePos)
     {
         if (money != null)
         {
@@ -140,46 +140,42 @@ public class TowerPlacementManager : MonoBehaviour
             }
         }
 
-        if (disabledScripts != null)
-            foreach (var s in disabledScripts)
-                if (s != null) s.enabled = true;
+        if (pendingTowerPrefab != null)
+        {
+            GameObject realTower = Instantiate(pendingTowerPrefab, placePos, Quaternion.identity);
 
-        if (disabledColliders != null)
-            foreach (var c in disabledColliders)
-                if (c != null) c.enabled = true;
+            if (autoNormalizeScale)
+                NormalizeToTargetHeight(realTower, targetWorldHeight);
+        }
+        else
+        {
+            Debug.LogError("No pending tower prefab stored. Did BeginPlacement run?");
+        }
 
-        SetAllSpriteAlpha(ghostTowerObj, 1f);
-
-        CleanupIndicatorOnly();
-
-        ghostTowerObj = null;
-        ghostTower = null;
-        disabledScripts = null;
-        disabledColliders = null;
-        pendingCost = 0;
+        CleanupPlacementObjectsAndState();
     }
 
     private void CancelPlacement()
     {
+        CleanupPlacementObjectsAndState();
+    }
+
+    private void CleanupPlacementObjectsAndState()
+    {
         if (ghostTowerObj != null)
             Destroy(ghostTowerObj);
 
-        CleanupIndicatorOnly();
-
-        ghostTowerObj = null;
-        ghostTower = null;
-        disabledScripts = null;
-        disabledColliders = null;
-        pendingCost = 0;
-    }
-
-    private void CleanupIndicatorOnly()
-    {
         if (rangeIndicatorObj != null)
             Destroy(rangeIndicatorObj);
 
+        ghostTowerObj = null;
+        ghostTower = null;
+
         rangeIndicatorObj = null;
         rangeIndicatorSR = null;
+
+        pendingCost = 0;
+        pendingTowerPrefab = null;
     }
 
     private Vector3 GetMouseWorldPosition()
@@ -261,7 +257,6 @@ public class TowerPlacementManager : MonoBehaviour
         float factor = desiredHeight / currentHeight;
         root.transform.localScale = originalScale * factor;
     }
-
 
     private void SetRangeIndicatorRadius(GameObject indicatorObj, SpriteRenderer sr, float radius)
     {
