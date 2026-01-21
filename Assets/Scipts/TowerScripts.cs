@@ -72,7 +72,7 @@ public abstract class Tower : MonoBehaviour
     {
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
 
-        float MaxDangerValue = Mathf.Infinity;
+        float maxDangerValue = float.NegativeInfinity;
         Transform targetEnemy = null;
 
         foreach (GameObject enemyObj in enemies)
@@ -83,10 +83,13 @@ public abstract class Tower : MonoBehaviour
             if (enemy == null || enemy.IsDead) continue;
 
             float distance = Vector2.Distance(transform.position, enemyObj.transform.position);
-            float dangervalue = CalculateDangerValue(enemy, distance);
-            if (distance <= range && dangervalue > MaxDangerValue)
+            if (distance > range) continue;
+
+            float dangerValue = CalculateDangerValue(enemy, distance);
+
+            if (dangerValue > maxDangerValue)
             {
-                MaxDangerValue = dangervalue;
+                maxDangerValue = dangerValue;
                 targetEnemy = enemyObj.transform;
             }
         }
