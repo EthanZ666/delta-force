@@ -15,6 +15,8 @@ public class Volume : MonoBehaviour
     private const string PREF_ON     = "music_on";
     private const string PREF_INDEX  = "music_index";
 
+    private MusicPlayer _player;
+
     private void Awake()
     {
         if (masterSlider) masterSlider.onValueChanged.AddListener(OnMasterChanged);
@@ -22,11 +24,13 @@ public class Volume : MonoBehaviour
         if (musicToggle)  musicToggle.onValueChanged.AddListener(OnMusicToggle);
         if (musicDropdown) musicDropdown.onValueChanged.AddListener(OnSelectSong);
 
+        FindPlayer();
         RefreshUI();
     }
 
     private void OnEnable()
     {
+        FindPlayer();
         RefreshUI();
         GameHotkeys.SettingsChanged += RefreshUI;
     }
@@ -34,6 +38,12 @@ public class Volume : MonoBehaviour
     private void OnDisable()
     {
         GameHotkeys.SettingsChanged -= RefreshUI;
+    }
+
+    private void FindPlayer()
+    {
+        // 允许 inactive 也能找到
+        _player = UnityEngine.Object.FindFirstObjectByType<MusicPlayer>(FindObjectsInactive.Include);
     }
 
     private void RefreshUI()
@@ -49,29 +59,44 @@ public class Volume : MonoBehaviour
 
         AudioListener.volume = master;
 
-        if (MusicPlayer.Instance != null)
+        if (_player != null)
         {
-            MusicPlayer.Instance.SetMusicVolume(music);
-            MusicPlayer.Instance.SetMusicOn(on);
+            _player.SetMusicVolume(music);
+            _player.SetMusicOn(on);
         }
 
         BuildDropdownOptions();
 
         if (musicDropdown)
-            musicDropdown.SetValueWithoutNotify(index);
+        {
+            int count = (_player != null) ? _player.SongCount() : 0;
+            if (count > 0)
+            {
+                index = Mathf.Clamp(index, 0, count - 1);
+                musicDropdown.SetValueWithoutNotify(index);
+            }
+            else
+            {
+                musicDropdown.SetValueWithoutNotify(0);
+            }
+        }
     }
 
     private void BuildDropdownOptions()
     {
         if (!musicDropdown) return;
-        if (MusicPlayer.Instance == null) return;
-        if (MusicPlayer.Instance.SongCount <= 0) return;
+
+        FindPlayer();
+        if (_player == null) return;
+
+        int count = _player.SongCount();
+        if (count <= 0) return;
 
         musicDropdown.ClearOptions();
 
         var options = new System.Collections.Generic.List<string>();
-        for (int i = 0; i < MusicPlayer.Instance.SongCount; i++)
-            options.Add(MusicPlayer.Instance.GetSongName(i));
+        for (int i = 0; i < count; i++)
+            options.Add(_player.GetSongName(i));
 
         musicDropdown.AddOptions(options);
     }
@@ -90,8 +115,9 @@ public class Volume : MonoBehaviour
         PlayerPrefs.SetFloat(PREF_MUSIC, v);
         PlayerPrefs.Save();
 
-        if (MusicPlayer.Instance != null)
-            MusicPlayer.Instance.SetMusicVolume(v);
+        FindPlayer();
+        if (_player != null)
+            _player.SetMusicVolume(v);
     }
 
     private void OnMusicToggle(bool on)
@@ -99,8 +125,9 @@ public class Volume : MonoBehaviour
         PlayerPrefs.SetInt(PREF_ON, on ? 1 : 0);
         PlayerPrefs.Save();
 
-        if (MusicPlayer.Instance != null)
-            MusicPlayer.Instance.SetMusicOn(on);
+        FindPlayer();
+        if (_player != null)
+            _player.SetMusicOn(on);
     }
 
     private void OnSelectSong(int index)
@@ -108,7 +135,8 @@ public class Volume : MonoBehaviour
         PlayerPrefs.SetInt(PREF_INDEX, index);
         PlayerPrefs.Save();
 
-        if (MusicPlayer.Instance != null)
-            MusicPlayer.Instance.PlayIndex(index);
+        FindPlayer();
+        if (_player != null)
+            _player.PlaySong(index);
     }
 }
