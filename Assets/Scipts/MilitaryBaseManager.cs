@@ -1,11 +1,17 @@
 using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public sealed class MilitaryBase : MonoBehaviour
 {
+    [Header("Health")]
     [SerializeField] private float maxHealth = 100f;
 
+    [Header("Scene Flow")]
+    [SerializeField] private string gameOverSceneName = "GameOver";
+
     private float currentHealth;
+    private bool gameOverTriggered;
 
     public float MaxHealth => maxHealth;
     public float CurrentHealth => currentHealth;
@@ -24,16 +30,15 @@ public sealed class MilitaryBase : MonoBehaviour
         if (amount <= 0f) return;
         if (currentHealth <= 0f) return;
 
-        currentHealth -= amount;
-        if (currentHealth < 0f) currentHealth = 0f;
-
+        currentHealth = Mathf.Max(0f, currentHealth - amount);
         HealthChanged?.Invoke(currentHealth);
 
-        if (currentHealth <= 0f)
+        if (currentHealth <= 0f && !gameOverTriggered)
         {
+            gameOverTriggered = true;
             Destroyed?.Invoke();
-            Debug.Log("Game Over: Military Base destroyed.");
-            // Ethan Zhao add game over screen logic here
+
+            SceneManager.LoadScene(gameOverSceneName);
         }
     }
 }
