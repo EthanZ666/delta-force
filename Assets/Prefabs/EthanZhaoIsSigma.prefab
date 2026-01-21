@@ -46,8 +46,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78911c76a269abf4e83510982f5b4123, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RegeneratingEnemy
-  maxHealth: 100
-  damage: 100
+  maxHealth: 8
+  damage: 10
   speed: 2.5
   regenPerSecond: 1
   regenDelayAfterHit: 2
@@ -78,7 +78,7 @@ GameObject:
   - component: {fileID: 7860922931417082786}
   m_Layer: 7
   m_Name: "\u65E0\u6807\u98981056_20260119213625_edit_33301898096480_0"
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
