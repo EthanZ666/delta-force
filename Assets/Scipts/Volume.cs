@@ -12,21 +12,17 @@ public class Volume : MonoBehaviour
     private const string PREF_MUSIC  = "volume_music";
     private const string PREF_ON     = "music_on";
 
-    private MusicPlayer _player;
-
     private void Awake()
     {
         if (masterSlider) masterSlider.onValueChanged.AddListener(OnMasterChanged);
         if (musicSlider)  musicSlider.onValueChanged.AddListener(OnMusicChanged);
         if (musicToggle)  musicToggle.onValueChanged.AddListener(OnMusicToggle);
 
-        FindPlayer();
         RefreshUI();
     }
 
     private void OnEnable()
     {
-        FindPlayer();
         RefreshUI();
         GameHotkeys.SettingsChanged += RefreshUI;
     }
@@ -34,12 +30,6 @@ public class Volume : MonoBehaviour
     private void OnDisable()
     {
         GameHotkeys.SettingsChanged -= RefreshUI;
-    }
-
-    private void FindPlayer()
-    {
-        // 允许 inactive 也能找到（比如 DontDestroyOnLoad 的对象）
-        _player = UnityEngine.Object.FindFirstObjectByType<MusicPlayer>(FindObjectsInactive.Include);
     }
 
     private void RefreshUI()
@@ -52,18 +42,12 @@ public class Volume : MonoBehaviour
         if (musicSlider)  musicSlider.SetValueWithoutNotify(music);
         if (musicToggle)  musicToggle.SetIsOnWithoutNotify(on);
 
-        // Apply immediately
         AudioListener.volume = master;
 
-        FindPlayer();
-        if (_player != null)
+        if (MusicPlayer.Instance != null)
         {
-            _player.SetMusicVolume(music);
-            _player.SetMusicOn(on);
-        }
-        else
-        {
-            Debug.LogWarning("[Volume] MusicPlayer not found in scene (or DontDestroyOnLoad).");
+            MusicPlayer.Instance.SetMusicVolume(music);
+            MusicPlayer.Instance.SetMusicOn(on);
         }
     }
 
@@ -71,7 +55,6 @@ public class Volume : MonoBehaviour
     {
         v = Mathf.Clamp01(v);
         AudioListener.volume = v;
-
         PlayerPrefs.SetFloat(PREF_MASTER, v);
         PlayerPrefs.Save();
     }
@@ -79,15 +62,11 @@ public class Volume : MonoBehaviour
     private void OnMusicChanged(float v)
     {
         v = Mathf.Clamp01(v);
-
         PlayerPrefs.SetFloat(PREF_MUSIC, v);
         PlayerPrefs.Save();
 
-        FindPlayer();
-        if (_player != null)
-            _player.SetMusicVolume(v);
-        else
-            Debug.LogWarning("[Volume] MusicPlayer not found when changing music volume.");
+        if (MusicPlayer.Instance != null)
+            MusicPlayer.Instance.SetMusicVolume(v);
     }
 
     private void OnMusicToggle(bool on)
@@ -95,10 +74,7 @@ public class Volume : MonoBehaviour
         PlayerPrefs.SetInt(PREF_ON, on ? 1 : 0);
         PlayerPrefs.Save();
 
-        FindPlayer();
-        if (_player != null)
-            _player.SetMusicOn(on);
-        else
-            Debug.LogWarning("[Volume] MusicPlayer not found when toggling music.");
+        if (MusicPlayer.Instance != null)
+            MusicPlayer.Instance.SetMusicOn(on);
     }
 }

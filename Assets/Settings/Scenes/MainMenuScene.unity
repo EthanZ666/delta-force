@@ -212,8 +212,20 @@ MonoBehaviour:
   selectedMapKey: selected_map_id
   fallbackMapId: Daba
   mapRoots: []
+  targetArea: {fileID: 0}
+  autoFindTargetAreaName: ScenarioSlots
   buttonSize: {x: 520, y: 340}
   spacing: 650
+  forceTargetAreaRect: 1
+  targetAreaSize: {x: 0, y: 0}
+  targetAreaAnchoredPos: {x: 0, y: 80}
+  addMaskToButtons: 1
+  mapHistories:
+  - 'Daba: (write your history here)'
+  - 'Zongcai: (write your history here)'
+  historyPanelName: HistoryPanel
+  historyTextName: HistoryText
+  pausePanelName: PausePanel
 --- !u!4 &989212045
 Transform:
   m_ObjectHideFlags: 0
@@ -259,7 +271,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23fe713ae91bc5b4daeeb3da344560cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MusicPlayer
-  musicPlayer: {fileID: 1181667965}
+  persistAcrossScenes: 1
+  musicSource: {fileID: 0}
   songs:
   - {fileID: 8300000, guid: 0b05498b8d7cd104b83736781defa6c5, type: 3}
 --- !u!82 &1181667965
@@ -274,7 +287,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 1

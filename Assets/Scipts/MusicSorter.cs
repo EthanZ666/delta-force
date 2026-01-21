@@ -2,11 +2,9 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// 提供按名称/时长/类型对歌曲列表进行排序的工具类。
-/// </summary>
 public static class MusicSorter
 {
+    [Serializable]
     public class SongInfo
     {
         public int OriginalIndex;
@@ -23,81 +21,85 @@ public static class MusicSorter
         }
     }
 
-    // 根据 AudioClip 数组构建 SongInfo 列表
-    public static List<SongInfo> BuildSongInfos(AudioClip[] clips)
+    // 从 clips 构建信息（Genre 这里先用 clip.name 规则简单推断；你也可以以后做真正的标签表）
+    public static List<SongInfo> BuildSongInfos(IList<AudioClip> clips)
     {
-        var list = new List<SongInfo>();
-        if (clips == null) return list;
-        for (int i = 0; i < clips.Length; i++)
+        var infos = new List<SongInfo>();
+        if (clips == null) return infos;
+
+        for (int i = 0; i < clips.Count; i++)
         {
             var c = clips[i];
-            string name = c != null ? c.name : $"(MissingClip_{i})";
-            float dur = c != null ? c.length : 0f;
-            string genre = InferGenreFromName(name);
-            list.Add(new SongInfo(i, name, dur, genre));
+            if (c == null) continue;
+
+            string name = c.name;
+            float dur = c.length;
+
+            // 简单 genre 规则：名字里包含关键词就归类，否则 "Unknown"
+            string lower = name.ToLowerInvariant();
+            string genre =
+                lower.Contains("rock") ? "Rock" :
+                lower.Contains("elect") ? "Electronic" :
+                lower.Contains("dram") ? "Dramatic" :
+                lower.Contains("eth") ? "Ethereal" :
+                "Unknown";
+
+            infos.Add(new SongInfo(i, name, dur, genre));
         }
-        return list;
+
+        return infos;
     }
 
-    /// <summary>冒泡按名称（A-Z）排序。</summary>
-    public static void BubbleSortByName(List<SongInfo> songs)
+    // BubbleSort：按 Name 排序
+    public static void BubbleSortByName(List<SongInfo> infos)
     {
-        if (songs == null) return;
-        for (int i = 0; i < songs.Count - 1; i++)
+        if (infos == null) return;
+
+        int n = infos.Count;
+        for (int i = 0; i < n - 1; i++)
         {
-            for (int j = 0; j < songs.Count - 1 - i; j++)
+            for (int j = 0; j < n - i - 1; j++)
             {
-                if (string.Compare(songs[j].Name, songs[j + 1].Name, StringComparison.OrdinalIgnoreCase) > 0)
+                if (string.Compare(infos[j].Name, infos[j + 1].Name, StringComparison.OrdinalIgnoreCase) > 0)
                 {
-                    var tmp = songs[j];
-                    songs[j] = songs[j + 1];
-                    songs[j + 1] = tmp;
+                    var tmp = infos[j];
+                    infos[j] = infos[j + 1];
+                    infos[j + 1] = tmp;
                 }
             }
         }
     }
 
-    /// <summary>交换排序按时长（短到长）排序。</summary>
-    public static void ExchangeSortByDuration(List<SongInfo> songs)
+    // ExchangeSort：按 Duration 从短到长
+    public static void ExchangeSortByDuration(List<SongInfo> infos)
     {
-        if (songs == null) return;
-        for (int i = 0; i < songs.Count - 1; i++)
+        if (infos == null) return;
+
+        int n = infos.Count;
+        for (int i = 0; i < n - 1; i++)
         {
-            for (int j = i + 1; j < songs.Count; j++)
+            for (int j = i + 1; j < n; j++)
             {
-                if (songs[i].Duration > songs[j].Duration)
+                if (infos[i].Duration > infos[j].Duration)
                 {
-                    var tmp = songs[i];
-                    songs[i] = songs[j];
-                    songs[j] = tmp;
+                    var tmp = infos[i];
+                    infos[i] = infos[j];
+                    infos[j] = tmp;
                 }
             }
         }
     }
 
-    /// <summary>先按类型字母排序，再按时长排序（类型相同的情况下）。</summary>
-    public static void SortByGenreThenDuration(List<SongInfo> songs)
+    // 组合排序：Genre 优先，再 Duration
+    public static void SortByGenreThenDuration(List<SongInfo> infos)
     {
-        if (songs == null) return;
-        songs.Sort((a, b) =>
+        if (infos == null) return;
+
+        infos.Sort((a, b) =>
         {
             int g = string.Compare(a.Genre, b.Genre, StringComparison.OrdinalIgnoreCase);
             if (g != 0) return g;
             return a.Duration.CompareTo(b.Duration);
         });
-    }
-
-    // 简单地从名称推测类型（示例用，可根据实际名称调整）
-    public static string InferGenreFromName(string songName)
-    {
-        if (string.IsNullOrWhiteSpace(songName)) return "Misc";
-        string n = songName.ToLowerInvariant();
-        if (n.Contains("battle") || n.Contains("combat") || n.Contains("war"))
-            return "Action";
-        if (n.Contains("calm") || n.Contains("menu") || n.Contains("lobby"))
-            return "Chill";
-        if (n.Contains("sad") || n.Contains("slow"))
-            return "Sad";
-        return "Misc";
     }
 }
