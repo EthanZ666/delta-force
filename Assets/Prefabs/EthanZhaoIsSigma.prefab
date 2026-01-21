@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4076453429405559173}
   - component: {fileID: 6582965900651247665}
   - component: {fileID: 7365825653055752057}
+  - component: {fileID: 8260913139776992954}
   m_Layer: 7
   m_Name: EthanZhaoIsSigma
   m_TagString: Enemy
@@ -66,6 +67,42 @@ MonoBehaviour:
   pathPointTag: PathPoint
   arriveDistance: 0.05
   baseTag: MilitaryBase
+--- !u!58 &8260913139776992954
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 543793013410177460}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_Radius: 0.5
 --- !u!1 &2889812252420979925
 GameObject:
   m_ObjectHideFlags: 0
@@ -78,7 +115,7 @@ GameObject:
   - component: {fileID: 7860922931417082786}
   m_Layer: 7
   m_Name: "\u65E0\u6807\u98981056_20260119213625_edit_33301898096480_0"
-  m_TagString: Enemy
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
