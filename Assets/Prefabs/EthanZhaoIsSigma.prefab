@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6582965900651247665}
   - component: {fileID: 7365825653055752057}
   m_Layer: 7
-  m_Name: Zombie
+  m_Name: EthanZhaoIsSigma
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -31,7 +31,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 4289512491132751966}
+  - {fileID: 4915698643028621537}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6582965900651247665
@@ -66,7 +66,7 @@ MonoBehaviour:
   pathPointTag: PathPoint
   arriveDistance: 0.05
   baseTag: MilitaryBase
---- !u!1 &3704361235309937701
+--- !u!1 &2889812252420979925
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -74,37 +74,37 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4289512491132751966}
-  - component: {fileID: 3623550374716396766}
+  - component: {fileID: 4915698643028621537}
+  - component: {fileID: 7860922931417082786}
   m_Layer: 7
-  m_Name: Square
+  m_Name: "\u65E0\u6807\u98981056_20260119213625_edit_33301898096480_0"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4289512491132751966
+--- !u!4 &4915698643028621537
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3704361235309937701}
+  m_GameObject: {fileID: 2889812252420979925}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 1.285, z: 0}
+  m_LocalScale: {x: 0.75, y: 0.75, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4076453429405559173}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &3623550374716396766
+--- !u!212 &7860922931417082786
 SpriteRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3704361235309937701}
+  m_GameObject: {fileID: 2889812252420979925}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -145,12 +145,12 @@ SpriteRenderer:
   m_SortingLayerID: -831762899
   m_SortingLayer: 3
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0.9960785, g: 0, b: 0.19607845, a: 1}
+  m_Sprite: {fileID: 6170778342771653296, guid: d23b8bd4b71c9cf4ca578d3b366df92f, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 1.9, y: 3.08}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
