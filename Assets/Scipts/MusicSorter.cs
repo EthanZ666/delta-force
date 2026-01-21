@@ -1,5 +1,6 @@
 // using UnityEngine;
 
+// store song info
 // public class Song
 // {
 //     public string name;
@@ -11,8 +12,8 @@
 // {
 //     static List<Song> songNames = new List<Song>();
 
-//     static void Main()
-//     {
+// static void Main()
+// {
 //         
 //         Song luna = new Song();
 //         luna.name = "Luna";
@@ -48,9 +49,9 @@
 //         CombinationSort();
 
 
-
-// // public void MusicBubbleSort()
-// {
+// by genre alphabetically
+//   public void MusicBubbleSort()
+//   {
 //     int n = songNames.Count;
 
 //     for (int i = 0; i < n - 1; i++)
@@ -63,11 +64,11 @@
     //                 songNames[j] = songNames[j + 1];
     //                 songNames[j + 1] = temp;
     //             }
-    //         }
     //     }
+    //  }
     // }
 
-
+// by duration, from ascending order
 // public void MusicExchangeSort()
 // {
 //     int n = songNames.Count;
@@ -86,6 +87,8 @@
 //         }
 //      }
 // }
+
+// combines both, sorting first genre, then duration within each genre
 //     public static void CombinationSort()
 //     {
 //         MusicBubbleSort(); 
@@ -99,7 +102,7 @@
 //             {
 //                 genreList.Add(songNames[i].genre);
 
-//                
+                   // takes all the songs of the current genre
 //                 List<Song> currentGenreSongs = new List<Song>();
 
 //                 for (int j = 0; j < songNames.Count; j++)
@@ -110,7 +113,6 @@
 //                     }
 //                 }
 //                 for (int a = 0; a < currentGenreSongs.Count - 1; a++)
-
 //                 {
 //                     for (int b = a + 1; b < currentGenreSongs.Count; b++)
 //                     {
@@ -123,11 +125,12 @@
 //                     }
 //                 }
 
-//               
+                   // adds the sorted list of songs within the genre to the fully sorted list
 //                 sorted.AddRange(currentGenreSongs);
 //             }
 //         }
 
+           // replace original with sorted
 //         songNames = sorted; 
 //     }
 // }
