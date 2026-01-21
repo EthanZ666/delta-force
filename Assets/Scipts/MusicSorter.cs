@@ -13,7 +13,7 @@
 
 //     static void Main()
 //     {
-//         // Sample songs
+//         
 //         Song luna = new Song();
 //         luna.name = "Luna";
 //         luna.genre = "Ethereal";
@@ -45,46 +45,47 @@
 //         songNames.Add(dawn);
 //         songNames.Add(backgroundMusic);
 
+//         CombinationSort();
+
 
 
 // // public void MusicBubbleSort()
 // {
-//     int n = songs.Length;
+//     int n = songNames.Count;
 
 //     for (int i = 0; i < n - 1; i++)
 //     {
 //         for (int j = 0; j < n - i - 1; j++)
 //         {
-//             string genreA = songs[j].genre.ToLower();
-//             string genreB = songs[j + 1].genre.ToLower();
+//              if (string.Compare(songNames[j].genre, songNames[j + 1].genre) > 0)
+    //             {
+    //                 Song temp = songNames[j];
+    //                 songNames[j] = songNames[j + 1];
+    //                 songNames[j + 1] = temp;
+    //             }
+    //         }
+    //     }
+    // }
 
-//             if (string.Compare(genreA, genreB) > 0)
-//             {
-//                 MusicList temp = songs[j];
-//                 songs[j] = songs[j + 1];
-//                 songs[j + 1] = temp;
-//             }
-//         }
-//  }
+
 // public void MusicExchangeSort()
 // {
-//     int n = songs.Length;
+//     int n = songNames.Count;
 
 //     for (int i = 0; i < n - 1; i++)
 //     {
 //         for (int j = i + 1; j < n; j++)
 //         {
 //            
-//             if (songs[i].length > songs[j].length)
-//             {
-//             
-//                 AudioClip temp = songs[i];
-//                 songs[i] = songs[j];
-//                 songs[j] = temp;
-//             }
+//              if (songNames[i].duration > songNames[j].duration)
+                // {
+                //     Song temp = songNames[i];
+                //     songNames[i] = songNames[j];
+                //     songNames[j] = temp;
+//                 }
 //         }
-// //     }
-// // }
+//      }
+// }
 //     public static void CombinationSort()
 //     {
 //         MusicBubbleSort(); 
@@ -127,7 +128,7 @@
 //             }
 //         }
 
-//         songNames = sorted; // Final list after sorting by genre and duration
+//         songNames = sorted; 
 //     }
 // }
 
