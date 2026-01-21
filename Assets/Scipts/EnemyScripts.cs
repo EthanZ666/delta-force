@@ -82,6 +82,8 @@ public abstract class EnemyBase : MonoBehaviour
         MoneyManager money = moneyObj.GetComponent<MoneyManager>();
         money.Add(this.reward);
         SaveManager.SaveGame();
+        Debug.Log(Application.persistentDataPath);
+
 
     }
 }
