@@ -13,9 +13,23 @@ public class ShopItemUI : MonoBehaviour
 
     void Awake()
     {
-        button = GetComponent<Button>();
-        GameObject placementObj = GameObject.FindWithTag("TowerPlacementManager");
-        TowerPlacementManager placement = placementObj.GetComponent<TowerPlacementManager>();
+        button = icon.GetComponent<Button>();
+        if (button == null)
+        {
+            return;
+        }
+
+        var placementObj = GameObject.FindWithTag("TowerPlacementManager");
+        if (placementObj == null)
+        {
+            return;
+        }
+
+        placement = placementObj.GetComponent<TowerPlacementManager>(); // ✅ assign the FIELD
+        if (placement == null)
+        {
+            return;
+        }
 
         button.onClick.AddListener(OnClick);
     }
@@ -29,7 +43,8 @@ public class ShopItemUI : MonoBehaviour
 
     void OnClick()
     {
-        if (placement == null || towerData == null) return;
+        Debug.Log($"Shop item clicked: {(towerData != null ? towerData.name : "NULL towerData")}");
+        if (towerData == null) return;
 
         placement.BeginPlacement(towerData);
     }

@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 public class TowerPlacementManager : MonoBehaviour
 {
@@ -9,10 +10,10 @@ public class TowerPlacementManager : MonoBehaviour
     [SerializeField] private GameObject rangeIndicatorPrefab;
 
     [Header("Placement Rules (2D)")]
-    [SerializeField] private LayerMask placeableMask;            // Buildable ground
-    [SerializeField] private LayerMask blockedMask;              // Non-placeable (path, water, rocks, etc.)
+    [SerializeField] private LayerMask placeableMask;
+    [SerializeField] private LayerMask blockedMask;
     [SerializeField] private LayerMask towerMask;
-    [SerializeField] private float towerFootprintRadius = 0.45f; // Placeholder tower size
+    [SerializeField] private float towerFootprintRadius = 0.45f;
 
     [Header("Visuals")]
     [SerializeField, Range(0.05f, 1f)] private float ghostAlpha = 0.6f;
@@ -47,14 +48,18 @@ public class TowerPlacementManager : MonoBehaviour
         SetIndicatorColour(valid);
 
         // Cancel on right click or escape
-        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetMouseButtonDown(1))
+        bool escapePressed = Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame;
+        bool rightClick = Mouse.current != null && Mouse.current.rightButton.wasPressedThisFrame;
+
+        if (escapePressed || rightClick)
         {
             CancelPlacement();
             return;
         }
 
         // Place on left click
-        if (Input.GetMouseButtonDown(0))
+        bool leftClick = Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame;
+        if (leftClick)
         {
             // Don't place if clicking UI
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
@@ -63,7 +68,7 @@ public class TowerPlacementManager : MonoBehaviour
             if (valid)
                 PlaceTower();
             else
-                CancelPlacement(); // invalid click cancels and charges nothing
+                CancelPlacement();
         }
     }
 
@@ -71,14 +76,11 @@ public class TowerPlacementManager : MonoBehaviour
     {
         if (towerdata.towerPrefab == null) return;
 
-        // If already placing something, cancel the current ghost
         if (ghostTowerObj != null)
             CancelPlacement();
 
-        // Sanity
         int cost = towerdata.price;
 
-        // If you use money, require affordability before even starting placement
         if (money != null && !money.CanAfford(cost))
             return;
 
@@ -96,20 +98,16 @@ public class TowerPlacementManager : MonoBehaviour
             return;
         }
 
-        // Disable colliders so the ghost doesn't block itself / interact
         disabledColliders = ghostTowerObj.GetComponentsInChildren<Collider2D>(true);
         foreach (var c in disabledColliders)
             if (c != null) c.enabled = false;
 
-        // Disable scripts so it doesn't shoot while placing
         disabledScripts = ghostTowerObj.GetComponentsInChildren<MonoBehaviour>(true);
         foreach (var s in disabledScripts)
             if (s != null) s.enabled = false;
 
-        // Make tower semi-transparent
         SetAllSpriteAlpha(ghostTowerObj, ghostAlpha);
 
-        // Create range indicator
         if (rangeIndicatorPrefab != null)
         {
             rangeIndicatorObj = Instantiate(rangeIndicatorPrefab);
@@ -119,7 +117,6 @@ public class TowerPlacementManager : MonoBehaviour
             rangeIndicatorObj.transform.localScale = new Vector3(r * 2f, r * 2f, 1f);
         }
 
-        // Force initial colour
         SetIndicatorColour(false);
     }
 
@@ -134,18 +131,13 @@ public class TowerPlacementManager : MonoBehaviour
             }
         }
 
-        // Turn ghost into a real tower
         if (disabledScripts != null)
-        {
             foreach (var s in disabledScripts)
                 if (s != null) s.enabled = true;
-        }
 
         if (disabledColliders != null)
-        {
             foreach (var c in disabledColliders)
                 if (c != null) c.enabled = true;
-        }
 
         SetAllSpriteAlpha(ghostTowerObj, 1f);
 
@@ -185,8 +177,12 @@ public class TowerPlacementManager : MonoBehaviour
     {
         if (mainCamera == null) mainCamera = Camera.main;
 
-        Vector3 mouse = Input.mousePosition;
-        Vector3 world = mainCamera.ScreenToWorldPoint(mouse);
+        if (Mouse.current == null)
+            return Vector3.zero;
+
+        Vector2 mouse = Mouse.current.position.ReadValue();
+        Vector3 screen = new Vector3(mouse.x, mouse.y, -mainCamera.transform.position.z);
+        Vector3 world = mainCamera.ScreenToWorldPoint(screen);
         world.z = 0f;
         return world;
     }
@@ -195,15 +191,12 @@ public class TowerPlacementManager : MonoBehaviour
     {
         Vector2 p = worldPos;
 
-        // Must be over placeable surface
         if (Physics2D.OverlapPoint(p, placeableMask) == null)
             return false;
 
-        // Must NOT touch blocked zones (paths, water, etc.)
         if (blockedMask.value != 0 && Physics2D.OverlapCircle(p, towerFootprintRadius, blockedMask) != null)
             return false;
 
-        // Must NOT overlap another tower
         if (towerMask.value != 0 && Physics2D.OverlapCircle(p, towerFootprintRadius, towerMask) != null)
             return false;
 
@@ -214,7 +207,6 @@ public class TowerPlacementManager : MonoBehaviour
     {
         if (rangeIndicatorSR == null) return;
 
-        // Grey = valid, Red = invalid
         Color c = isValid
             ? new Color(0.6f, 0.6f, 0.6f, indicatorAlpha)
             : new Color(1f, 0f, 0f, indicatorAlpha);
