@@ -10,6 +10,9 @@ public abstract class EnemyBase : MonoBehaviour
     [SerializeField] protected float damage = 10f;
     public virtual float Damage => damage;
 
+    [SerializeField] protected int reward = 10;
+    public virtual float Reward => reward;
+
     [Header("Enemy Movement")]
     [SerializeField] protected float speed = 2.5f;
     public virtual float Speed => speed;
@@ -75,6 +78,9 @@ public abstract class EnemyBase : MonoBehaviour
         Died?.Invoke(this);
         Destroy(gameObject);
         GameStats.totalEnemiesKilled ++;
+        GameObject moneyObj = GameObject.FindWithTag("MoneyManager");
+        MoneyManager money = moneyObj.GetComponent<MoneyManager>();
+        money.Add(this.reward);
         SaveManager.SaveGame();
 
     }
