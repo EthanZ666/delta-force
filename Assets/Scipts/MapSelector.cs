@@ -449,10 +449,10 @@ public class MapSelector : MonoBehaviour
     private string GetHistoryText(string mapId, int index)
     {
         if (mapId.Equals("Daba", StringComparison.OrdinalIgnoreCase))
-            return "Daba: Defend the strategic dam from an enemy landing. Losing control would cause widespread destruction.";
+            return "Zero Dam: Defend the strategic dam from an enemy landing. Losing control would cause widespread destruction.";
 
         if (mapId.Equals("Zongcai", StringComparison.OrdinalIgnoreCase))
-            return "Zongcai: Defend the Chairman’s headquarters against enemy forces seeking to destroy leadership.";
+            return "CEO: Defend the Chairman’s headquarters against enemy forces seeking to destroy leadership.";
 
         return $"{mapId}: (no history text set)";
     }
