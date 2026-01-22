@@ -302,6 +302,55 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &207355588
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 207355590}
+  - component: {fileID: 207355589}
+  m_Layer: 0
+  m_Name: DangerHighlighter2D
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &207355589
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 207355588}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5511f0bd019119442aa4e9aa21aa5eff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DangerHighlighter2D
+  labelPrefab: {fileID: 5276064954501911944, guid: 5b356fa3315ba03408612bab8f87f7c0, type: 3}
+  labelOffset: {x: 0, y: 0.8, z: 0}
+  labelParent: {fileID: 0}
+  topCount: 3
+  refreshInterval: 0.25
+--- !u!4 &207355590
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 207355588}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1280, y: 720, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &209461689
 GameObject:
   m_ObjectHideFlags: 0
@@ -3034,6 +3083,8 @@ MonoBehaviour:
   pathPointTag: PathPoint
   enemyPrefabs:
   - {fileID: 543793013410177460, guid: 5eb4f34f00077554fa8bb1976a11350e, type: 3}
+  - {fileID: 543793013410177460, guid: 3e7db64f54ef5704f98cd5f292f95a59, type: 3}
+  - {fileID: 543793013410177460, guid: f43251b89d1e71c4c8e142eceec70df5, type: 3}
   startDelay: 5
   spawnInterval: 5
   spawnCount: 10
@@ -4425,3 +4476,4 @@ SceneRoots:
   - {fileID: 2101480064}
   - {fileID: 2076352466}
   - {fileID: 1695542598}
+  - {fileID: 207355590}
