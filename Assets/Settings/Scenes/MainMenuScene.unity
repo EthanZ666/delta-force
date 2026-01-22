@@ -271,10 +271,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23fe713ae91bc5b4daeeb3da344560cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MusicPlayer
-  persistAcrossScenes: 1
+  dropdown: {fileID: 0}
   musicSource: {fileID: 0}
   songs:
   - {fileID: 8300000, guid: 0b05498b8d7cd104b83736781defa6c5, type: 3}
+  - {fileID: 8300000, guid: 23a31580481716d4abc129835439b914, type: 3}
+  - {fileID: 8300000, guid: f73dde8001c21e04a8858b75cee685c3, type: 3}
+  - {fileID: 8300000, guid: 0dc4617d03faa4544a60508f56455423, type: 3}
+  - {fileID: 8300000, guid: 8d163ce32228fa6488f96db604e9dac8, type: 3}
 --- !u!82 &1181667965
 AudioSource:
   m_ObjectHideFlags: 0

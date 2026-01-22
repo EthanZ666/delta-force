@@ -1,10 +1,14 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class MusicPlayer : MonoBehaviour
 {
     public static MusicPlayer Instance { get; private set; }
+
+    [Header("Optional UI Reference (TMP_Dropdown)")]
+    public TMP_Dropdown dropdown;
 
     [Header("Audio Source (auto-get if empty)")]
     public AudioSource musicSource;
@@ -28,15 +32,14 @@ public class MusicPlayer : MonoBehaviour
 
     private void Awake()
     {
-        // ===== Singleton =====
+        // 如果已经有实例，并且不是自己 -> 删掉自己
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
         }
-        Instance = this;
 
-        // 如果你希望跨场景继续播放，打开这行
+        Instance = this;
         DontDestroyOnLoad(gameObject);
 
         if (musicSource == null)
@@ -47,7 +50,12 @@ public class MusicPlayer : MonoBehaviour
 
         musicSource.loop = true;
         musicSource.playOnAwake = false;
+
+        // 防止从别的场景带来的“暂停/静音”
+        AudioListener.pause = false;
+        AudioListener.volume = 1f;
     }
+
 
     private void Start()
     {
@@ -64,6 +72,14 @@ public class MusicPlayer : MonoBehaviour
 
         ApplyVolume();
         ApplyOnOff();
+
+        // 可选：如果你在 SettingScene 里有下拉框，就自动填充+绑定
+        if (dropdown != null)
+        {
+            BindDropdown(dropdown);
+            // 让UI显示当前保存的index（不触发播放）
+            dropdown.SetValueWithoutNotify(_currentIndex);
+        }
 
         if (_musicOn)
             PlayIndex(_currentIndex);
@@ -127,6 +143,42 @@ public class MusicPlayer : MonoBehaviour
         return Mathf.Clamp01(PlayerPrefs.GetFloat(PREF_MUSIC_VOL, 1f));
     }
 
+    /// <summary>
+    /// 绑定下拉菜单：自动填充选项 + 监听 index 改变
+    /// </summary>
+    public void BindDropdown(TMP_Dropdown dd)
+    {
+        dropdown = dd;
+        if (dropdown == null) return;
+
+        dropdown.ClearOptions();
+
+        var opts = new List<string>();
+        if (songs != null)
+        {
+            for (int i = 0; i < songs.Count; i++)
+            {
+                opts.Add(songs[i] == null ? $"Song {i}" : songs[i].name);
+            }
+        }
+        dropdown.AddOptions(opts);
+
+        // 防止重复绑定（例如多次进入SettingScene）
+        dropdown.onValueChanged.RemoveListener(PlayByIndex);
+        dropdown.onValueChanged.AddListener(PlayByIndex);
+    }
+
+    // ===== UnityEvent target for TMP_Dropdown.OnValueChanged(Int32) =====
+    public void PlayByIndex(int index)
+    {
+        // 这里不要用 text/name 了，直接用 index 播放，最稳定
+        PlayIndex(index);
+
+        // 保证UI不乱（可选）
+        if (dropdown != null && dropdown.value != index)
+            dropdown.SetValueWithoutNotify(index);
+    }
+
     // ===== Internal =====
     private void ApplyVolume()
     {
@@ -157,12 +209,18 @@ public class MusicPlayer : MonoBehaviour
         _musicOn = PlayerPrefs.GetInt(PREF_MUSIC_ON, 1) == 1;
         _currentIndex = PlayerPrefs.GetInt(PREF_SONG_INDEX, 0);
 
-        if (!PlayerPrefs.HasKey(PREF_MUSIC_VOL))
+        // —— 自动修正音量的关键逻辑在这里 ——
+        float vol = PlayerPrefs.GetFloat(PREF_MUSIC_VOL, -1f);
+
+        // 第一次运行（-1）或之前被存成 0 → 自动设为 1
+        if (vol < 0.05f)
         {
-            PlayerPrefs.SetFloat(PREF_MUSIC_VOL, 1f);
+            vol = 1f;
+            PlayerPrefs.SetFloat(PREF_MUSIC_VOL, vol);
             PlayerPrefs.Save();
         }
     }
+
 
     private void SavePrefs()
     {
