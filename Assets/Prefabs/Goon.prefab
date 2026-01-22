@@ -47,9 +47,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf4bdf4fd357df4408e593a6e9b60c33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BasicEnemy
-  maxHealth: 50
+  maxHealth: 75
   damage: 10
-  reward: 15
+  reward: 5
   speed: 2.5
 --- !u!114 &7365825653055752057
 MonoBehaviour:

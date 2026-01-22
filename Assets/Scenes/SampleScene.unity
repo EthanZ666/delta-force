@@ -331,10 +331,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5511f0bd019119442aa4e9aa21aa5eff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DangerHighlighter2D
-  labelPrefab: {fileID: 5276064954501911944, guid: 5b356fa3315ba03408612bab8f87f7c0, type: 3}
-  labelOffset: {x: 0, y: 0.8, z: 0}
-  labelParent: {fileID: 0}
-  topCount: 3
+  labelPrefab: {fileID: 1132834564828195112, guid: 5b356fa3315ba03408612bab8f87f7c0, type: 3}
+  labelOffset: {x: 0, y: -0.25, z: 0}
+  labelParent: {fileID: 846421506}
+  topCount: 2
   refreshInterval: 0.25
 --- !u!4 &207355590
 Transform:
@@ -3086,8 +3086,13 @@ MonoBehaviour:
   - {fileID: 543793013410177460, guid: 3e7db64f54ef5704f98cd5f292f95a59, type: 3}
   - {fileID: 543793013410177460, guid: f43251b89d1e71c4c8e142eceec70df5, type: 3}
   startDelay: 5
-  spawnInterval: 5
-  spawnCount: 10
+  timeBetweenWaves: 5
+  startingSpawnCount: 8
+  spawnCountIncreasePerWave: 2
+  startingSpawnInterval: 3
+  spawnIntervalDecreasePerWave: 0.05
+  minimumSpawnInterval: 0.25
+  wavesToUnlockAllPrefabs: 5
 --- !u!4 &1695542598
 Transform:
   m_ObjectHideFlags: 0

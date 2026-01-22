@@ -47,9 +47,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b05b65aaec657a4cb72876e2f3259e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossEnemy
-  maxHealth: 100
+  maxHealth: 150
   damage: 20
-  reward: 35
+  reward: 15
   speed: 2.5
   regenPerSecond: 8
   regenDelayAfterHit: 1.5
