@@ -49,8 +49,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RegeneratingEnemy
   maxHealth: 200
   damage: 15
-  reward: 10
-  speed: 2
+  reward: 15
+  speed: 1.5
   regenPerSecond: 5
   regenDelayAfterHit: 2
 --- !u!114 &7365825653055752057

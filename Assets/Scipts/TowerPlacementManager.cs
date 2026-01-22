@@ -29,6 +29,8 @@ public class TowerPlacementManager : MonoBehaviour
     private GameObject ghostTowerObj;
     private Tower ghostTower;
 
+    
+
     private GameObject rangeIndicatorObj;
     private SpriteRenderer rangeIndicatorSR;
 
