@@ -9,11 +9,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4076453429405559173}
-  - component: {fileID: 6582965900651247665}
+  - component: {fileID: 5018907617976622003}
   - component: {fileID: 7365825653055752057}
   - component: {fileID: 8260913139776992954}
   m_Layer: 7
-  m_Name: EthanZhaoIsSigma
+  m_Name: Goon
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -35,7 +35,7 @@ Transform:
   - {fileID: 4915698643028621537}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6582965900651247665
+--- !u!114 &5018907617976622003
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -44,14 +44,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 543793013410177460}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 78911c76a269abf4e83510982f5b4123, type: 3}
+  m_Script: {fileID: 11500000, guid: bf4bdf4fd357df4408e593a6e9b60c33, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RegeneratingEnemy
+  m_EditorClassIdentifier: Assembly-CSharp::BasicEnemy
   maxHealth: 50
-  damage: 20
+  damage: 10
+  reward: 15
   speed: 2.5
-  regenPerSecond: 1
-  regenDelayAfterHit: 2
 --- !u!114 &7365825653055752057
 MonoBehaviour:
   m_ObjectHideFlags: 0
